@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, Intnet13_projectActivity!</string>
+    <string name="app_name">Intnet13_project</string>
+    <string name="searchButton">searchButton</string>
+
+</resources>

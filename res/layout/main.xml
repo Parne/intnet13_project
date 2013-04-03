@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>   
+<ViewSwitcher xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/viewSwitcher1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+    <include
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        layout="@layout/login" />
+       
+	<RelativeLayout 
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:onClick="@string/searchButton"
+	    android:orientation="vertical" >
+	
+	    <EditText
+	        android:id="@+id/searchText"
+	        android:layout_width="165dp"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_toLeftOf="@+id/searchButton"
+	        android:hint="Sök kontakt." >
+	
+	        <requestFocus />
+	    </EditText>
+	
+	    <Button
+	        android:id="@+id/searchButton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignParentTop="true"
+	        android:text="Sök" />
+	
+	    <Spinner
+	        android:id="@+id/groupPicker"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_below="@+id/searchButton"
+	        android:layout_toLeftOf="@+id/addButton" />
+	
+	    <Button
+	        android:id="@+id/addButton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:layout_alignTop="@+id/groupPicker"
+	        android:text=" + " />
+
+	    <ListView
+	        android:id="@+id/contactList"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/groupPicker" >
+
+	    </ListView>
+	
+	</RelativeLayout>
+</ViewSwitcher>

@@ -17,17 +17,14 @@ public class modelDB {
 		
 	}
 
-	public ArrayList<String> getGroups() {
+	public String[] getGroups() {
 		// TODO Auto-generated method stub
 		//(String[]);
-		ArrayList<String> temp = new ArrayList<String>();
-		temp.add("Mat");
-		temp.add("Jobb");
-		temp.add("Skola");
+		String[] temp = {"Mat", "Jobb","Skola"};
 		return temp;
 	}
 
-	public ArrayList<String> getContacts() {
+	public String[] getContacts() {
 		// TODO Auto-generated method stub
 		return null;
 	}

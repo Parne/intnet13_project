@@ -8,9 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TableRow;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -46,7 +48,7 @@ public class Intnet13_projectActivity extends Activity {
 					startActivityForResult(i, 0);*/
 					vs.showNext();
 					fillGroup(mdb.getGroups());
-					fillTable(mdb.getContacts());
+					//fillTable(mdb.getContacts());
 				}
 				else
 					Toast.makeText(Intnet13_projectActivity.this,
@@ -83,7 +85,7 @@ public class Intnet13_projectActivity extends Activity {
 			}
 		});
         
-        groupSpinner = (Spinner)this.findViewById(R.id.spinner1);
+        groupSpinner = (Spinner)this.findViewById(R.id.groupPicker);
         
     }
     
@@ -91,10 +93,15 @@ public class Intnet13_projectActivity extends Activity {
     	
     }
     
-    private void fillGroup(ArrayList<String> groups) {
-    	TableRow row = new TableRow(null);
-    	//groupSpinner.addView(child)
-		
+    private void fillGroup(String[] groups) {
+    	//TableRow row = new TableRow(this.getApplicationContext());
+    	//groupSpinner.addView(child)    	
+    	
+    	ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item, groups);
+    	adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    	groupSpinner.setAdapter(adapter1);
+
 	}
 }
 

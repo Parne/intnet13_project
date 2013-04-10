@@ -8,12 +8,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
@@ -25,8 +30,11 @@ public class Intnet13_projectActivity extends Activity {
 	private Button searchButton;
 	private Button addButton;
 	private Spinner groupSpinner;	
+	private ListView contactList;
 	
 	private  modelDB mdb;
+	
+	//TODO: save state, add
 	
     /** Called when the activity is first created. */
     @Override
@@ -48,7 +56,7 @@ public class Intnet13_projectActivity extends Activity {
 					startActivityForResult(i, 0);*/
 					vs.showNext();
 					fillGroup(mdb.getGroups());
-					//fillTable(mdb.getContacts());
+					fillcontactList(mdb.getContacts());
 				}
 				else
 					Toast.makeText(Intnet13_projectActivity.this,
@@ -65,9 +73,7 @@ public class Intnet13_projectActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-
-				/*Intent i = new Intent(Intnet13_projectActivity.this, Add_Activity.class);	
-				startActivityForResult(i, 0);*/				
+				fillcontactList(mdb.search(searchText.getText().toString()));		
 				
 			}
 		});
@@ -80,27 +86,52 @@ public class Intnet13_projectActivity extends Activity {
 			public void onClick(View v) {
 
 				Intent i = new Intent(Intnet13_projectActivity.this, Add_Activity.class);	
+				i.putExtra("mdb", mdb);
 				startActivityForResult(i, 0);				
 				
 			}
 		});
         
         groupSpinner = (Spinner)this.findViewById(R.id.groupPicker);
+        groupSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				fillcontactList(mdb.getByGroup((String) ((TextView) arg1).getText()));
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {	
+			}
+		});
         
+        contactList = (ListView) this.findViewById(R.id.contactList);
+        contactList.setOnItemClickListener(new OnItemClickListener(){
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					//pass selected contact and load info.
+			    	Intent i = new Intent(Intnet13_projectActivity.this, Add_Activity.class);	
+			    	i.putExtra("mdb", mdb);
+			    	i.putExtra("contactName", (String) ((TextView) arg1).getText());
+					startActivityForResult(i, 0);	
+				}});
+      
     }
     
-    private void fillTable(ArrayList<String> list){
-    	
+    private void fillcontactList(String[] list){
+    	ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+    				android.R.layout.simple_list_item_1,
+    				list);
+    	contactList.setAdapter(arrayAdapter); 
     }
     
-    private void fillGroup(String[] groups) {
-    	//TableRow row = new TableRow(this.getApplicationContext());
-    	//groupSpinner.addView(child)    	
-    	
+    private void fillGroup(String[] groups) {    	
     	ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, groups);
     	adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    	groupSpinner.setAdapter(adapter1);
+    	groupSpinner.setAdapter(adapter1);	
 
 	}
 }

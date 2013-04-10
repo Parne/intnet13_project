@@ -21,7 +21,7 @@
                 android:text="Namn" />
 
             <EditText
-                android:id="@+id/editText1"
+                android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -38,7 +38,7 @@
                 android:text="Telefonnummer" />
 
             <EditText
-                android:id="@+id/editText2"
+                android:id="@+id/phoneNumber"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -51,7 +51,7 @@
                 android:text="Email" />
 
             <EditText
-                android:id="@+id/editText3"
+                android:id="@+id/email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -59,7 +59,7 @@
                 android:inputType="textEmailAddress" />
 
             <Spinner
-                android:id="@+id/spinner1"
+                android:id="@+id/groupPickerSinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
@@ -70,7 +70,7 @@
                 android:text="Lägg till ny grupp" />
 
             <EditText
-                android:id="@+id/editText4"
+                android:id="@+id/newGroupName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -94,11 +94,11 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_toLeftOf="@+id/remove"
-                    android:layout_toRightOf="@+id/edit"
+                    android:layout_toRightOf="@+id/editContact"
                     android:text="Spara" />
 
                 <Button
-                    android:id="@+id/edit"
+                    android:id="@+id/editContact"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"

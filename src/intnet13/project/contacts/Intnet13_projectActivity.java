@@ -23,14 +23,14 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 public class Intnet13_projectActivity extends Activity {
-	private EditText userName;
-	private Button loginButton;
-	private ViewSwitcher vs;
-	private EditText searchText;
-	private Button searchButton;
-	private Button addButton;
-	private Spinner groupSpinner;	
-	private ListView contactList;
+	public EditText userName;
+	public Button loginButton;
+	public ViewSwitcher vs;
+	public EditText searchText;
+	public Button searchButton;
+	public Button addButton;
+	public Spinner groupSpinner;	
+	public ListView contactList;
 	
 	private  modelDB mdb;
 	
@@ -43,92 +43,32 @@ public class Intnet13_projectActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mdb = new modelDB();
+        Control c = new Control(this);
         
         vs = (ViewSwitcher)findViewById(R.id.viewSwitcher1);
         userName = (EditText)findViewById(R.id.username);
         loginButton = (Button)this.findViewById(R.id.loginButton);        
-        loginButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-
-				if(mdb.authenticate(userName.getText().toString(), "password")){
-					/*Intent i = new Intent(Intnet13_projectActivity.this, Add_Activity.class);	
-					startActivityForResult(i, 0);*/
-					vs.showNext();
-					fillGroup(mdb.getGroups());
-					fillcontactList(mdb.getContacts());
-				}
-				else
-					Toast.makeText(Intnet13_projectActivity.this,
-							"Fel användarnamn/lösenord",
-							Toast.LENGTH_SHORT).show();
-				
-			}
-			
-		});
-        
+        loginButton.setOnClickListener(c.getButtonListener());        
         searchText = (EditText)findViewById(R.id.searchText);
         searchButton = (Button)this.findViewById(R.id.searchButton);        
-        searchButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				fillcontactList(mdb.search(searchText.getText().toString()));		
-				
-			}
-		});
-        
-        
+        searchButton.setOnClickListener(c.getButtonListener());        
         addButton = (Button)this.findViewById(R.id.addButton);        
-        addButton.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-
-				Intent i = new Intent(Intnet13_projectActivity.this, Add_Activity.class);	
-				i.putExtra("mdb", mdb);
-				startActivityForResult(i, 0);				
-				
-			}
-		});
-        
+        addButton.setOnClickListener(c.getButtonListener());        
         groupSpinner = (Spinner)this.findViewById(R.id.groupPicker);
-        groupSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				fillcontactList(mdb.getByGroup((String) ((TextView) arg1).getText()));
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {	
-			}
-		});
-        
+        groupSpinner.setOnItemSelectedListener(c.getSpinnerListener());        
         contactList = (ListView) this.findViewById(R.id.contactList);
-        contactList.setOnItemClickListener(new OnItemClickListener(){
-				@Override
-				public void onItemClick(AdapterView<?> arg0, View arg1,
-						int arg2, long arg3) {
-					//pass selected contact and load info.
-			    	Intent i = new Intent(Intnet13_projectActivity.this, Add_Activity.class);	
-			    	i.putExtra("mdb", mdb);
-			    	i.putExtra("contactName", (String) ((TextView) arg1).getText());
-					startActivityForResult(i, 0);	
-				}});
+        contactList.setOnItemClickListener(c.getListListener());
       
     }
     
-    private void fillcontactList(String[] list){
+    public void fillcontactList(String[] list){
     	ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
     				android.R.layout.simple_list_item_1,
     				list);
     	contactList.setAdapter(arrayAdapter); 
     }
     
-    private void fillGroup(String[] groups) {    	
+    public void fillGroup(String[] groups) {    	
     	ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_spinner_item, groups);
     	adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

@@ -66,7 +66,7 @@ public class Add_Activity extends Activity {
 				String group = ((TextView)groupSpinner.getSelectedItem()).getText().toString();
 				if(groupSpinner.getSelectedItemPosition() == 0)
 					group = newGroup.getText().toString();
-				mdb.saveContact(name.getText().toString(),
+				mdb.saveContact(name.getText().toString(), "challe",
 						phoneNumber.getText().toString(),
 						email.getText().toString(),
 						group);

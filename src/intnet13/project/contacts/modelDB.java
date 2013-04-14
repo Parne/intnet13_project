@@ -7,8 +7,11 @@ import java.util.Collection;
 import android.widget.EditText;
 
 public class modelDB implements Serializable {
-	private String user;
-	
+	private DatabaseClient myClient;
+	public modelDB() {
+
+		myClient = new DatabaseClient("130.237.223.174", 4545, "admin", "admin");
+	}
 	/**
 	 * Ifall rätt sätter user;
 	 * @param user
@@ -16,7 +19,9 @@ public class modelDB implements Serializable {
 	 * @return
 	 */
 	public boolean authenticate(String user, String password) {
-		return true;
+		//myClient = new DatabaseClient("130.237.223.174", 4545, user, password);
+		return myClient.authenticate();
+		//return true;
 		
 	}
 
@@ -26,20 +31,23 @@ public class modelDB implements Serializable {
 	 * @return
 	 */
 	public String[] getGroups() {
-		// TODO Auto-generated method stub
-		String[] temp = {"Alla", "Mat", "Jobb","Skola"};
-		return temp;
+		// Done
+		//String[] temp = {"Alla", "Mat", "Jobb","Skola"};
+		//return temp;
+		return myClient.getGroups();
 	}
 
 	public String[] getContacts() {
-		// TODO Auto-generated method stub
-		String[] temp = {"Pålsson", "Tard","Noob"};
-		return temp;
+		// Done
+		//String[] temp = {"Pålsson", "Tard","Noob"};
+		//return temp;
+		return myClient.getContacts();
 	}
 
 	public String[] search(String contactName) {
-		// TODO Auto-generated method stub
+		// Done
 		return new String[]{contactName};
+		
 	}
 	
 	/**
@@ -48,26 +56,31 @@ public class modelDB implements Serializable {
 	 * @return
 	 */
 	public String[] getByGroup(String groupName) {
+		// Done
 		if(groupName.equals("Alla"))
 			return getContacts();
-		String[] temp = {groupName+"1", groupName+"2", groupName+"3"};
-		return temp;		
+		//String[] temp = {groupName+"1", groupName+"2", groupName+"3"};
+		//return temp;	
+		return myClient.getByGroup(groupName);
 	}
 
 	public void remove(String name) {
-		// TODO Auto-generated method stub
+		// Done
+		myClient.removeContact(name);
 		
 	}
 
-	public void saveContact(String name, String phoneNumber, String email,
+	public void saveContact(String surname, String firstname, String phoneNumber, String email,
 			String group) {
-		// TODO Auto-generated method stub
+		// Done
+		myClient.saveContact(surname, firstname, phoneNumber, email, group);
 		
 	}
 
 	public String[] getContactInfo(String contactName) {
-		// TODO Auto-generated method stub
-		return new String[]{contactName, "070-0707070", "test@noob.com"};
+		// Done
+		//return new String[]{contactName, "070-0707070", "test@noob.com"};
+		return myClient.getContactInfo(contactName);
 	}
 
 }

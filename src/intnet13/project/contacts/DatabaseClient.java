@@ -37,7 +37,16 @@ public class DatabaseClient {
 	public boolean authenticate() {
 		System.out.println("Yolo Auth");
 		String auth = "where username='" + user + "' AND password='" + password + "'";
-		SQLStatement sql = new SQLStatement("SELECT", "* FROM", "c_user", auth);
+		final SQLStatement sql = new SQLStatement("SELECT", "* FROM", "c_user", auth);
+		
+		/*(new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				query(sql);
+			}
+			
+		})).start();*/
 		if(query(sql) == null) {
 			System.out.println("Access denied!");
 			return false;			
@@ -129,6 +138,9 @@ public class DatabaseClient {
 	private void openConnection() {
 		try {
 	    	s = new Socket(host, port);
+	    	PrintWriter pw = new PrintWriter(s.getOutputStream());
+	    	pw.write("TEST");
+	    	pw.close();
 			out = new ObjectOutputStream(s.getOutputStream());
 			in = new ObjectInputStream(s.getInputStream());	
 		}
@@ -148,9 +160,13 @@ public class DatabaseClient {
 	}
 	
 	public ResultData query(SQLStatement statement) {
+		System.out.println("1");
 		openConnection();
+		System.out.println("2");
 		try {
 			out.writeObject(statement);
+			out.flush();
+			System.out.println("3");
 			return receiveQuery();
 		}
 		catch (IOException ioe) {
@@ -164,13 +180,17 @@ public class DatabaseClient {
 	private ResultData receiveQuery() {
 		ResultData rs = null;
 		try {
+			System.out.println("4");
 			rs = (ResultData) in.readObject();
 		} 
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.out.println("5");
 		closeConnection();
+		System.out.println("6");
 		if (rs.wasSuccessful()) {
+			System.out.println("7");
 			return rs;
 		}
 		return null;		

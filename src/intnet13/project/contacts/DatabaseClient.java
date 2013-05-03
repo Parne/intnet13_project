@@ -352,7 +352,7 @@ public class DatabaseClient {
 		if(!contacts.containsKey(contactName))
 			return new String[]{""};
 		String[] info = contacts.get(contactName);
-		String[] res = new String[info.length+1];
+		String[] res = new String[info.length];
 		res[0] = contactName;
 		res[1] = info[0];
 		res[2] = info[1];

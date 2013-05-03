@@ -57,9 +57,14 @@ public class Control {
 				break;
 			
 			case R.id.addButton:
+				System.out.println("start");
+					Add_Activity.mdb = mdb;
 					Intent i = new Intent(This, Add_Activity.class);	
-					i.putExtra("mdb", mdb);
-					This.startActivityForResult(i, 0);	
+					//i.putExtra("mdb", mdb);
+					System.out.println("middle");
+					This.startActivityForResult(i, 0);
+					System.out.println("done");
+					This.fillcontactList(mdb.getContacts());
 				break;
 				
 			case R.id.searchButton:
@@ -72,6 +77,7 @@ public class Control {
 				
 			case R.id.save:
 				String group = ThisAdd.groupSpinner.getSelectedItem().toString();
+				System.out.println("At pos: " + ThisAdd.groupSpinner.getSelectedItemPosition());
 				if(ThisAdd.groupSpinner.getSelectedItemPosition() == 0)
 					group = ThisAdd.newGroup.getText().toString();
 				System.out.println("Group: " + group);
@@ -86,6 +92,7 @@ public class Control {
 				mdb.remove(ThisAdd.name.getText().toString());
 				ThisAdd.setResult(ThisAdd.RESULT_OK);
 				ThisAdd.finish();
+				This.fillcontactList(mdb.getContacts());
 		        break;
 			}
 		}
@@ -98,10 +105,12 @@ public class Control {
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
+			Add_Activity.mdb = mdb;
 			Intent i = new Intent(This, Add_Activity.class);	
-	    	i.putExtra("mdb", mdb);
+	    	//i.putExtra("mdb", mdb);
 	    	i.putExtra("contactName", (String) ((TextView) arg1).getText());
 			This.startActivityForResult(i, 0);
+			This.fillcontactList(mdb.getContacts());
 		}
 	}
 	

@@ -22,15 +22,18 @@ public class Add_Activity extends Activity {
 	public Button saveButton;
 	public Button removeButton;
 	
-	modelDB mdb;
+	public static modelDB mdb;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add);
         
-        mdb = (modelDB) getIntent().getSerializableExtra("mdb");
+        System.out.println("in:start");
+        //mdb = new modelDB();//(modelDB) getIntent().getSerializableExtra("mdb");
+         System.out.println("in:1");
         Control c = new Control(this, mdb);
+        System.out.println("in:2");
         
         name = (EditText)this.findViewById(R.id.name);
         phoneNumber = (EditText)this.findViewById(R.id.phoneNumber);
@@ -43,6 +46,7 @@ public class Add_Activity extends Activity {
         newGroup = (EditText)this.findViewById(R.id.newGroupName);
         
         String temp = getIntent().getStringExtra("contactName");
+        System.out.println("in:3");
         if(temp != null){
         	name.setText(temp);
         	String[] cInfo = mdb.getContactInfo(temp);

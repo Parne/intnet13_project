@@ -43,7 +43,7 @@ public class modelDB implements Serializable {
 
 	public String[] search(String contactName) {
 		// Done
-		return new String[]{contactName};
+		return myClient.search(contactName);
 		
 	}
 	

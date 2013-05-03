@@ -9,7 +9,6 @@ import android.widget.EditText;
 public class modelDB implements Serializable {
 	private DatabaseClient myClient;
 	public modelDB() {
-
 		myClient = new DatabaseClient("130.237.223.174", 4545, "admin", "admin");
 	}
 	/**
@@ -19,9 +18,7 @@ public class modelDB implements Serializable {
 	 * @return
 	 */
 	public boolean authenticate(String user, String password) {
-		//myClient = new DatabaseClient("130.237.223.174", 4545, user, password);
-		return myClient.authenticate();
-		//return true;
+		return true;
 		
 	}
 
@@ -70,10 +67,10 @@ public class modelDB implements Serializable {
 		
 	}
 
-	public void saveContact(String surname, String firstname, String phoneNumber, String email,
+	public void saveContact(String contactName, String phoneNumber, String email,
 			String group) {
 		// Done
-		myClient.saveContact(surname, firstname, phoneNumber, email, group);
+		myClient.saveContact(contactName, phoneNumber, email, group);
 		
 	}
 

@@ -75,7 +75,7 @@ public class Control {
 				if(ThisAdd.groupSpinner.getSelectedItemPosition() == 0)
 					group = ThisAdd.newGroup.getText().toString();
 				System.out.println("Group: " + group);
-				mdb.saveContact(ThisAdd.name.getText().toString(), "firstname",
+				mdb.saveContact(ThisAdd.name.getText().toString(),
 						ThisAdd.phoneNumber.getText().toString(),
 						ThisAdd.email.getText().toString(),
 						group);

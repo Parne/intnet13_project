@@ -11,138 +11,230 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class DatabaseClient {
-	private ObjectOutputStream out;
-	private ObjectInputStream in;
+	private PrintWriter output;
+	private BufferedReader input;
 	private Socket s;
 	private String host, user, password;
 	private int port;
-	private ArrayList<ResultData> groups;
-	private Map<Integer, ResultData> contacts;
-	private Set<Integer> distinct_contacts;
-	private ArrayList<Integer> user_groups;
-	private ArrayList<Contact_Group_Element> contact_groups;
+	private HashMap<String, String[]> contacts;
+	private HashMap<String, String[]> groups;
+	private HashMap<String, ArrayList<String>> contacts_in_group;
 	
 	public DatabaseClient(String host, int port, String user, String password) {
 		this.host = host;
 		this.port = port;
 		this.user = user;
 		this.password = password;
-		//if(authenticate()) {
-			//saveContact("Pan", "Peter", "Champagne1", "sakah@kth.se", "SU");
-			//removeContact("Peter Pan");
-			//getByGroup("SU");
-		//}
+		init();
+	}
+	private void init() {
+		contacts = new HashMap<String, String[]>();
+		groups = new HashMap<String, String[]>();
+		contacts_in_group = new HashMap<String, ArrayList<String>>();		
+		authenticate();
+		loadContacts();
 	}
 	
-	public boolean authenticate() {
-		System.out.println("Yolo Auth");
-		String auth = "where username='" + user + "' AND password='" + password + "'";
-		final SQLStatement sql = new SQLStatement("SELECT", "* FROM", "c_user", auth);
-		
-		/*(new Thread(new Runnable(){
-
-			@Override
-			public void run() {
-				query(sql);
-			}
-			
-		})).start();*/
-		if(query(sql) == null) {
-			System.out.println("Access denied!");
-			return false;			
+	private boolean authenticate() {
+		int[] repsonse;
+		repsonse = query("1", null);
+		if (repsonse[0]== 1) {
+			System.out.println("Authenticated!");
+			return true;
 		}
-		init();
+		System.out.println("Access denied!");
+		return false;
+	}
+	
+	private boolean loadGroups() {	
+		int[] response;
+		response = query("6", null);
+		if(response[0] != 1) {
+			System.out.println("Data request failed");
+			if(response[0] == 3)
+				System.out.println("Access denied: Invalid user and/or password!");
+			return false;
+		}		
+		for (int i = 0; i<response[1]/3; i++) {
+			try {
+				String g_name = input.readLine();
+				String g_desc = input.readLine();
+				String g_id = input.readLine();
+				addGroup(g_name, g_desc, g_id);
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return true;
 	}
 	
-	private void init() {
-		user_groups = new ArrayList<Integer>();
-		contact_groups = new ArrayList<Contact_Group_Element>();
-		groups = new ArrayList<ResultData>();
-		contacts = new HashMap<Integer, ResultData>();
-		distinct_contacts = new TreeSet<Integer>();
-		setUserGroups();
-		setContactGroups();
-		setContacts();	
+	private void loadContacts() {
+		if(!loadGroups()) //Reqest to get groups failed
+			return;
+		int[] response;
+		response = query("2", null);
+		if(response[0] != 1) {
+			System.out.println("Data request failed");
+			if(response[0] == 3)
+				System.out.println("Access denied: Invalid user and/or password!");
+			return;
+		}		
+		for (int i = 0; i<response[1]/5; i++) {
+			try {
+				String c_name = input.readLine();
+				String c_phone = input.readLine();
+				String c_email = input.readLine();
+				String c_id = input.readLine();
+				String g_name = input.readLine();
+				addContact(c_name, c_phone, c_email, c_id);
+				addContactInGroup(g_name, c_name);
+			} 
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	private void setContacts() {
-		int numberOfContacts = distinct_contacts.size();
-		if(numberOfContacts == 0) {
-			System.out.println("You lack contact_ids");
-			return;			
-		}
-		Iterator<Integer> it=distinct_contacts.iterator();
-		int current;
-		while(it.hasNext()) {
-			current = (Integer) it.next();
-			String res = "where contact_id='" + current + "'";
-			SQLStatement sql = new SQLStatement("SELECT", "* FROM", "contact", res);
-			ResultData rs = query(sql);
-			if(rs == null) {
-				System.out.println("No match in table:contact for contactID:" + current);
-				return;
-			}			
-			contacts.put(current, rs);
+	private void addContact(String name, String phone, String email, String id) {
+		// If contact is new
+		if(!contacts.containsKey(name)) {
+			String[] arr = new String[3];
+			arr[0] = phone;
+			arr[1] = email;
+			arr[2] = id;
+			contacts.put(name, arr);
 		}
 	}
-	private void setUserGroups() {
-		String res = "where username='" + user + "'";
-		SQLStatement sql1 = new SQLStatement("SELECT", "* FROM", "user_groups", res);
-		ResultData rs = query(sql1);
-		if(rs == null) {
-			System.out.println("You have no groups!");
-			return;
-		}
-		ArrayList<ArrayList<ResultObject>> dataCollection = rs.getCollection();
-		ArrayList<ResultObject> curr;
-		int length = dataCollection.size();
-		if(length > 0) {
-			for (int i = 0; i<length; i++) {
-				curr = dataCollection.get(i);
-				user_groups.add((Integer) curr.get(1).getValue());
-				String req = "where group_id=" + user_groups.get(i);
-				SQLStatement sql2 = new SQLStatement("SELECT", "* FROM", "groups", req);
-				groups.add(query(sql2));
-			}
+	
+	private void addGroup(String name, String desc, String id) {
+		// If group is new
+		if(!groups.containsKey(name)) {
+			String[] arr = new String[2];
+			arr[0] = desc;
+			arr[1] = id;
+			groups.put(name, arr);
 		}
 	}
-	private void setContactGroups() {
-		int numberOfGroups = user_groups.size();
-		if(numberOfGroups == 0) {
-			System.out.println("You lack group_ids");
-			return;			
+	
+	private void addContactInGroup(String g_name, String c_name) {
+		ArrayList<String> arr;
+		// If group is new
+		if(!contacts_in_group.containsKey(g_name)) {
+			arr = new ArrayList<String>();
+			arr.add(c_name);
+			contacts_in_group.put(g_name, arr);
 		}
-		int group_id, contact_id;
-		for (int j = 0; j<numberOfGroups; j++) {
-			group_id = user_groups.get(j);
-			String res = "where group_id='" + group_id + "'";
-			SQLStatement sql = new SQLStatement("SELECT", "* FROM", "contact_groups", res);
-			ResultData rs = query(sql);
-			if(rs == null) {
-				System.out.println("No match in table:contact_groups for groupID:" + group_id);
-				return;
-			}
-			ArrayList<ArrayList<ResultObject>> dataCollection = rs.getCollection();
-			ArrayList<ResultObject> curr;
-			int length = dataCollection.size();
-			for (int i = 0; i<length; i++) {
-				curr = dataCollection.get(i);
-				contact_id = (Integer) curr.get(1).getValue();
-				contact_groups.add(new Contact_Group_Element(group_id, contact_id));
-				distinct_contacts.add(contact_id);
-			}
+		else {
+			arr = contacts_in_group.get(g_name);
+			arr.add(c_name);
 		}
+	}
+	
+	public boolean removeContact(String name) {
+		if(!contacts.containsKey(name)) {
+			System.out.println("Contact doesn't exist!");
+			return false;
+		}
+		int[] response;
+		response = query("3",  contacts.get(name));
+		if(response[0] == 1) {
+			contacts.remove(name);
+			// Remove contact's membership in all groups
+			Iterator at = contacts_in_group.entrySet().iterator();
+			ArrayList<String> contact_in_group;
+			String current;
+		    while (at.hasNext()) {
+		        Map.Entry pairs = (Map.Entry)at.next();
+		        contact_in_group = (ArrayList<String>) pairs.getValue();
+		        for(int i = 0; i<contact_in_group.size(); i++) {
+		        	current = contact_in_group.get(i);
+		        	if(current.equals(name))
+		        		contact_in_group.remove(i);
+		        }
+		    }
+		}
+		else {
+			System.out.println("Connection to db failed");
+			return false;
+		}
+		return true;
+	}
+	
+	private boolean saveGroup(String[] options) {
+		if(groups.containsKey(options[0])) {
+			System.out.println("Failed to save group: Group already exists");
+			return false;
+		}
+		int[] response;
+		response = query("5", options);
+		if (response[0] != 1) {
+			System.out.println("Failed to save group to external db");
+			return false;
+		}
+		// response[1] = new group_id
+		addGroup(options[0], options[1], Integer.toString(response[1]));
+		return true;
+	}
+	
+	public boolean saveContact(String contactName, String phoneNumber, String email,
+			String group) {
+		if(!groups.containsKey(group)) {
+			String[] options = new String[2];
+			options[0] = group;
+			options[1] = group + " gruppen";
+			if(!saveGroup(options))
+				return false;
+		}
+		String g_id = groups.get(group)[1];
+		String[] options = new String[4];
+		options[0] = contactName;
+		options[1] = phoneNumber;
+		options[2] = email;
+		options[3] = g_id;
+		int[] response;
+		response = query("4",  options);
+		if(response[0] != 1) {
+			System.out.println("Failed to save contact to external db");
+			return false;
+		}
+		addContact(contactName, phoneNumber, email, Integer.toString(response[1]));
+		addContactInGroup(group, contactName);
+		return true;
+	}
+	
+	private void debugPrint() {
+		System.out.println("*** User_groups ***");
+		Iterator it = groups.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        String [] i = (String[]) pairs.getValue();
+	        System.out.println(pairs.getKey() + " " + i[0] + " " + i[1]);
+	    }
+	    System.out.println("\n*** Contacts ***");
+	    Iterator ut = contacts.entrySet().iterator();
+	    while (ut.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)ut.next();
+	        String [] info = (String[]) pairs.getValue();
+	        System.out.println(pairs.getKey() + " " + info[0] + " " + info[1] + " " + info[2]);
+	    } 
+	    System.out.println("\n*** Contacts_in_group ***");
+	    Iterator at = contacts_in_group.entrySet().iterator();
+	    while (at.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)at.next();
+	        ArrayList<String> info = (ArrayList<String>) pairs.getValue();
+	        System.out.println(pairs.getKey());
+	        for(String a: info)
+	        	System.out.println(a);
+	        System.out.println();
+	    }
 	}
 	
 	private void openConnection() {
 		try {
 	    	s = new Socket(host, port);
-	    	PrintWriter pw = new PrintWriter(s.getOutputStream());
-	    	pw.write("TEST");
-	    	pw.close();
-			out = new ObjectOutputStream(s.getOutputStream());
-			in = new ObjectInputStream(s.getInputStream());	
+			output = new PrintWriter(s.getOutputStream());
+			input = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -151,237 +243,120 @@ public class DatabaseClient {
 	
 	private void closeConnection() {
 		try {
-			out.close();
-			in.close();
+			output.close();
+			input.close();
 			s.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public ResultData query(SQLStatement statement) {
-		System.out.println("1");
+	public int[] query(String type, String[] options) {
 		openConnection();
-		System.out.println("2");
-		try {
-			out.writeObject(statement);
-			out.flush();
-			System.out.println("3");
-			return receiveQuery();
+		output.println(type);
+		output.println(user);
+		output.println(password);
+		int i = Integer.parseInt(type);
+		switch (i) {
+			case 3: //Remove contact [contact_id]
+				output.println(options[2]);
+				break;
+			case 4: //Add contact [name, phone, email, group_id]
+				output.println(options[0]);
+				output.println(options[1]);
+				output.println(options[2]);
+				output.println(options[3]);
+				break;
+			case 5:
+				output.println(options[0]);
+				output.println(options[1]);
+				break;
+			default:
+				break;
 		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		return null;
+		output.flush();
+		return receiveMessage();
 	}
 	
-	// Return the resultdata if query was successful
-	// else return null
-	private ResultData receiveQuery() {
-		ResultData rs = null;
+	private int[] receiveMessage() {
+		int[] response = new int[2];
+		response[0] = -1;
+		response[1] = -1;
 		try {
-			System.out.println("4");
-			rs = (ResultData) in.readObject();
-		} 
-		catch (Exception e) {
+			response[0] = Integer.parseInt(input.readLine());
+			response[1] = Integer.parseInt(input.readLine());
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("5");
-		closeConnection();
-		System.out.println("6");
-		if (rs.wasSuccessful()) {
-			System.out.println("7");
-			return rs;
-		}
-		return null;		
+		//System.out.println("Status: " + response[0] + "\nRows: " + response[1]);
+		return response;
 	}
-	
-	// get contact info, return String[] with info
-	// if found, else null
-	public String[] getContactInfo(String contactName) {
-			int contactID = getContactID(contactName);
-			if(contactID == -1) {
-				System.out.println("Couldnt find contact ID");
-				return null;
-			}			
-			ResultData contact = contacts.get(contactID);
-			ArrayList<ResultObject> currentContact = contact.getRow(0);
-			String phone = (String) currentContact.get(3).getValue();
-			String email = (String) currentContact.get(4).getValue();
-			return new String[]{contactName, phone, email};
-	}
-	
-	// Return id for a contact, if not found -1 is returned
-	private int getContactID(String contactName) {
-		String currentName;
-		int currentID = -1;
-		ArrayList<ResultObject> currentContact = null;
-		Iterator it = contacts.entrySet().iterator();
-		Map.Entry<Integer, ResultData> entry;
-		boolean found = false;
-	    while(it.hasNext() && !found) {
-	    	entry = (Entry<Integer, ResultData>) it.next();
-		    ResultData value = entry.getValue();
-		    currentContact = value.getRow(0);
-		    currentName = (String) currentContact.get(2).getValue() + " " + (String) currentContact.get(1).getValue();
-		    if(currentName.equals(contactName)) {
-			    currentID = entry.getKey();
-		    	found = true;		    	
-		    }
-	    }
-		return currentID;		
-	}
-	
-	// Get all contacts
-	public String[] getContacts() {
-		String[] result = new String[contacts.size()];
-		ArrayList<ResultObject> currentContact = null;
-		int i = 0;
-		for (Map.Entry<Integer, ResultData> entry : contacts.entrySet()) {
-		    ResultData value = entry.getValue();currentContact = value.getRow(0);
-		    String currentName = (String) currentContact.get(2).getValue() + " " + 
-		    		(String) currentContact.get(1).getValue();
-		    result[i] = currentName;
-		    i++;
-		    System.out.println(currentName);
-			}
-		return result;
-	}
-	
-	public void removeContact(String contactName) {
-		int contactID = getContactID(contactName);
-		if(contactID == -1) {
-			System.out.println("Couldnt remove contact: couldnt find it");
-			return;
-		}
-		SQLStatement sql = new SQLStatement("DELETE FROM", "contact", contactID);
-		ResultData newContact = query(sql);
-		if(newContact == null) {
-			System.out.println("Something fishy happened when trying to delete a contact");
-			return;
-		}
-		contacts.remove(contactID);
-		distinct_contacts.remove(contactID);
-		removeContactGroup(contactID);			
-	}
-	private void removeContactGroup(int id) {
-		Contact_Group_Element curr;
-		for (int i = 0; i<contact_groups.size(); i++) {
-			curr = contact_groups.get(i);
-			if(curr.contact_id == id) {
-				contact_groups.remove(i);
-			}
-		}
-	}
-	
-	public void saveContact(String surname, String firstname, String phoneNumber, String email,
-			String group)  {
-		int groupID = getGroupIDByName(group);
-		if(groupID == -1) {
-			System.out.println("Couldnt find group when saving contact!");
-			return;
-		}
-		String[] values = new String[]{surname, firstname, phoneNumber, email};
-		SQLStatement sql = new SQLStatement("INSERT INTO", "contact", values);
-		ResultData newContact = query(sql);
-		if(newContact == null) {
-			System.out.println("Something fishy happened when trying to save a contact into contact");
-			return;
-		}
-		int contactID = Integer.parseInt((String) newContact.getRow(0).get(0).getValue());
-		String[] values1 = new String[]{Integer.toString(groupID), Integer.toString(contactID)};
-		SQLStatement sql1 = new SQLStatement("INSERT INTO", "contact_groups", values1);
-		ResultData addedContactGroup = query(sql1);
-		if(addedContactGroup == null) {
-			System.out.println("Something fishy happened when trying to save into contact_group");
-			return;
-		}
-		contacts.put(contactID, newContact);
-		distinct_contacts.add(contactID);
-		contact_groups.add(new Contact_Group_Element(groupID, contactID));
-	}
-	
-	class Contact_Group_Element {
-		public int group_id, contact_id;
-		Contact_Group_Element(int a, int b) {
-			group_id = a;
-			contact_id = b;
-		}
-		public String toString() {
-			return "group_id: " + group_id + " contact_id: " + contact_id; 
-		}
-	}
-	private void debugPrint() {
-		System.out.println("\nUserGroups");
-		for (int i = 0; i<user_groups.size(); i++)
-			System.out.println(user_groups.get(i));
-		System.out.println("\nContactGroups");
-		for (int i = 0; i<contact_groups.size(); i++)
-			System.out.println(contact_groups.get(i));
-		
-		Iterator it = distinct_contacts.iterator();
-		System.out.println("\nDistinct contacts");
-        while(it.hasNext())
-        {
-          System.out.println("Contact: "+ it.next());
-        }
 
-		System.out.println("\nGroups");
-		for (int i = 0; i<groups.size(); i++)
-			System.out.println(groups.get(i));
-		
-		System.out.println("\nContacts");
-		for (Map.Entry<Integer, ResultData> entry : contacts.entrySet()) {
-		    int key = entry.getKey();
-		    ResultData value = entry.getValue();
-		    System.out.println("Key: " + key);
-		    System.out.println(value);
-		}
-	}
+	
+	public static void main(String[] args) throws Exception{
+    	String host = args[0];
+		int port = Integer.parseInt(args[1]);
+		String user = args[2];
+		String password = args[3];
+    	new DatabaseClient(host, port, user, password);
+    }
 	
 	public String[] getGroups() {
-		String[] result = new String[groups.size()+1];
-		result[0] = "Alla";
-		ArrayList<ResultObject> currentGroup;
-		for (int i = 0; i < groups.size(); i++) {
-			currentGroup = groups.get(i).getRow(0);
-			String name = (String) currentGroup.get(1).getValue();
-			result[i+1] = name;
-			System.out.println(name);
-		}
-		return result;
+		String[] res = new String[groups.size()+1];
+		Iterator it = groups.entrySet().iterator();
+		res[0] = "Alla";
+		int i = 1;
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        res[i] = (String) pairs.getKey();
+	        i++;
+	    }
+		return res;
 	}
 	
-	private int getGroupIDByName(String name) {
-		String currentName;
-		ResultData currentRow;
-		for (int i = 0; i< groups.size(); i++) {
-			currentRow = groups.get(i);
-			currentName = (String) currentRow.getRow(0).get(1).getValue();
-			if (name.equals(currentName))
-				return (Integer) currentRow.getRow(0).get(0).getValue();
-		}
-		return -1;
+	public String[] getContacts() {
+		String[] res = new String[contacts.size()];
+		Iterator it = contacts.entrySet().iterator();
+		int i = 0;
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        res[i] = (String) pairs.getKey();
+	        i++;
+	    }
+		return res;
 	}
+	public String[] search(String contactName) {
+		if(contacts.containsKey(contactName))
+			return new String[]{contactName};
+		return new String[]{""};		
+	}
+	
 	public String[] getByGroup(String groupName) {
-		ArrayList<String> result = new ArrayList<String>();
-		int group_id = getGroupIDByName(groupName);
-		Contact_Group_Element curr;
-		for (int i = 0; i<contact_groups.size(); i++) {
-			curr = contact_groups.get(i);
-			if(curr.group_id == group_id) {
-				result.add(getContactByID(curr.contact_id));
-			}
+		// Done
+		if(groupName.equals("Alla"))
+			return getContacts();
+		//String[] temp = {groupName+"1", groupName+"2", groupName+"3"};
+		//return temp;
+		if(!groups.containsKey(groupName))
+			return new String[]{""};
+		ArrayList<String> groupMembers = contacts_in_group.get(groupName);
+		String[] res = new String[groupMembers.size()];
+		for (int i = 0; i<groupMembers.size(); i++) {
+			res[i] = groupMembers.get(i);
 		}
-		String[] temp = {groupName+"1", groupName+"2", groupName+"3"};
-		return temp;		
+		return res;
 	}
 	
-	private String getContactByID(int id) {
-		ResultData currentContact = contacts.get(id);
-		String  currentName = (String) currentContact.getRow(0).get(2).getValue() + " " 
-		+ (String) currentContact.getRow(0).get(1).getValue();
-		return currentName;
-	}
 
+	public String[] getContactInfo(String contactName) {
+		if(!contacts.containsKey(contactName))
+			return new String[]{""};
+		String[] info = contacts.get(contactName);
+		String[] res = new String[info.length+1];
+		res[0] = contactName;
+		res[1] = info[0];
+		res[2] = info[1];
+		//return new String[]{contactName, "070-0707070", "test@noob.com"};
+		return res;
+	}
 }

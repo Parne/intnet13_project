@@ -179,6 +179,8 @@ public class DatabaseClient {
 	
 	public boolean saveContact(String contactName, String phoneNumber, String email,
 			String group) {
+		if(contacts.containsKey(contactName))
+			return false;
 		if(!groups.containsKey(group)) {
 			String[] options = new String[2];
 			options[0] = group;

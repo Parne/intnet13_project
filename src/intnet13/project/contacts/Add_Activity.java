@@ -62,7 +62,9 @@ public class Add_Activity extends Activity {
         	String[] cInfo = mdb.getContactInfo(temp);
         	
         	phoneNumber.setText(cInfo[1]);
-        	email.setText(cInfo[2]);        	
+        	email.setText(cInfo[2]);
+
+        	groupSpinner.setSelection(adapter1.getPosition(cInfo[3]));
 
             editable(false);
         }

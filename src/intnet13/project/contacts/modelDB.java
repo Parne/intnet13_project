@@ -43,7 +43,18 @@ public class modelDB implements Serializable {
 
 	public String[] search(String contactName) {
 		// Done
-		return myClient.search(contactName);
+		//return myClient.search(contactName);
+		return search(contactName, "Alla");		
+	}
+	
+	/**
+	 * Search for contacts within a group
+	 * @param contactName
+	 * @return
+	 */
+	public String[] search(String contactName, String groupName) {
+		// Done
+		return myClient.search(contactName, groupName);
 		
 	}
 	
@@ -67,6 +78,8 @@ public class modelDB implements Serializable {
 		
 	}
 
+	// !!! FIX !!! Nar save into Alla, blir group = "",
+	// satt group = "Alla"
 	public void saveContact(String contactName, String phoneNumber, String email,
 			String group) {
 		// Done

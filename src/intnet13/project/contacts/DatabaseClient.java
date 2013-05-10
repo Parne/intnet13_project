@@ -179,6 +179,7 @@ public class DatabaseClient {
 	
 	public boolean saveContact(String contactName, String phoneNumber, String email,
 			String group) {
+		System.out.println("New contact into group: " + group );
 		if(contacts.containsKey(contactName))
 			return false;
 		if(!groups.containsKey(group)) {
@@ -304,13 +305,18 @@ public class DatabaseClient {
     }
 	
 	public String[] getGroups() {
-		String[] res = new String[groups.size()+1];
+		String[] res = new String[groups.size()];
 		Iterator it = groups.entrySet().iterator();
 		res[0] = "Alla";
+		String currentGroup;
 		int i = 1;
 	    while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
-	        res[i] = (String) pairs.getKey();
+	        currentGroup = (String) pairs.getKey();
+	        if(currentGroup.equals("Alla"))
+	        	i--;
+	        else
+	        	res[i] = currentGroup;
 	        i++;
 	    }
 		return res;
@@ -327,12 +333,41 @@ public class DatabaseClient {
 	    }
 		return res;
 	}
-	public String[] search(String contactName) {
-		if(contacts.containsKey(contactName))
-			return new String[]{contactName};
-		return new String[]{""};		
-	}
 	
+	public String[] search(String contactName, String groupName) {
+		ArrayList<String> contacts = contacts_in_group.get(groupName);
+		ArrayList<String> found = new ArrayList<String>();
+		contactName = contactName.toLowerCase();
+		for (String a : contacts) {
+			if(a.toLowerCase().contains(contactName))
+				found.add(a);
+		}
+		String[] res = new String[found.size()];
+		for (int i = 0; i<found.size(); i++) {
+			res[i] = found.get(i);
+		}
+		return res;
+	}
+	public String[] search(String contactName) {
+		contactName = contactName.toLowerCase();
+		System.out.println("Searching for " + contactName);
+		String current;
+		ArrayList<String> found = new ArrayList<String>();
+		Iterator it = contacts.entrySet().iterator();
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        current = (String) pairs.getKey();
+	        System.out.println("Current = " + current.toLowerCase());
+	        if(current.toLowerCase().contains(contactName)) {
+	        	found.add(current);
+	        	System.out.println("Found match!");
+	        }
+	    }
+	    String[] res = new String[found.size()];
+	    for (int i = 0; i<found.size(); i++)
+	    	res[i] = found.get(i);	    	
+		return res;
+	}
 	public String[] getByGroup(String groupName) {
 		// Done
 		if(groupName.equals("Alla"))

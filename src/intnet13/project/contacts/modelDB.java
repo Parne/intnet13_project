@@ -28,22 +28,17 @@ public class modelDB implements Serializable {
 	 * @return
 	 */
 	public String[] getGroups() {
-		// Done
-		//String[] temp = {"Alla", "Mat", "Jobb","Skola"};
-		//return temp;
 		return myClient.getGroups();
 	}
 
 	public String[] getContacts() {
-		// Done
-		//String[] temp = {"Pålsson", "Tard","Noob"};
-		//return temp;
 		return myClient.getContacts();
 	}
-
+	
+	//
+	// Obsolete !!!!
+	//
 	public String[] search(String contactName) {
-		// Done
-		//return myClient.search(contactName);
 		return search(contactName, "Alla");		
 	}
 	
@@ -67,29 +62,22 @@ public class modelDB implements Serializable {
 		// Done
 		if(groupName.equals("Alla"))
 			return getContacts();
-		//String[] temp = {groupName+"1", groupName+"2", groupName+"3"};
-		//return temp;	
 		return myClient.getByGroup(groupName);
 	}
 
 	public void remove(String name) {
 		// Done
-		myClient.removeContact(name);
-		
+		myClient.removeContact(name);		
 	}
 
 	// !!! FIX !!! Nar save into Alla, blir group = "",
 	// satt group = "Alla"
 	public void saveContact(String contactName, String phoneNumber, String email,
 			String group) {
-		// Done
-		myClient.saveContact(contactName, phoneNumber, email, group);
-		
+		myClient.saveContact(contactName, phoneNumber, email, group);		
 	}
 
 	public String[] getContactInfo(String contactName) {
-		// Done
-		//return new String[]{contactName, "070-0707070", "test@noob.com"};
 		return myClient.getContactInfo(contactName);
 	}
 	public void deleteGroup(String group) {

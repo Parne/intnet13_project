@@ -3,4 +3,7 @@ Parne att fixa:
 - Updatera spinner.
 - Fixa crash (null pointer).
 - Massa fler jag glömt bort....
-- Knapp för att ta bort kontakter
+- Knapp för att ta bort kontakter, DONE
+- "Alla" blir "", DONE
+- Tabort kontakt, DONE
+- Disable ändra och tabort vid ny kontakt, DONE

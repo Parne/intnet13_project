@@ -1,6 +1,7 @@
 package intnet13.project.contacts;
 
 import java.io.Serializable;
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -8,18 +9,17 @@ import android.widget.EditText;
 
 public class modelDB implements Serializable {
 	private DatabaseClient myClient;
-	public modelDB() {
-		myClient = new DatabaseClient("130.237.223.174", 4545, "admin", "admin");
+	public modelDB(String ipAddress) {
+		myClient = new DatabaseClient(ipAddress, 4545, "admin", "admin");
 	}
 	/**
-	 * Ifall rätt sätter user;
 	 * @param user
 	 * @param password
 	 * @return
 	 */
-	public boolean authenticate(String user, String password) {
-		return true;
-		
+	public int authenticate(String user, String password) {
+		myClient = new DatabaseClient("130.237.223.174", 4545, user, password);
+		return myClient.authenticate();		
 	}
 
 	//ifall ArrayList är att föredra går det att ändra.
@@ -82,7 +82,7 @@ public class modelDB implements Serializable {
 	}
 	public void deleteGroup(String group) {
 		if(group.equals("Alla")) return;
-		System.out.println("Delete:"+ group);		
+		myClient.removeGroup(group);	
 	}
 
 }

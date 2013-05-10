@@ -2,6 +2,7 @@ package intnet13.project.contacts;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -28,25 +29,28 @@ public class DatabaseClient {
 		this.port = port;
 		this.user = user;
 		this.password = password;
-		init();
 	}
 	private void init() {
 		contacts = new HashMap<String, String[]>();
 		groups = new HashMap<String, String[]>();
-		contacts_in_group = new HashMap<String, ArrayList<String>>();		
-		authenticate();
+		contacts_in_group = new HashMap<String, ArrayList<String>>();
 		loadContacts();
 	}
 	
-	private boolean authenticate() {
-		int[] repsonse;
-		repsonse = query("1", null);
-		if (repsonse[0]== 1) {
+	public int authenticate() {
+		int[] response;
+		response = query("1", null);
+		if (response[0]== 1) {
 			System.out.println("Authenticated!");
-			return true;
+			init();
+			return 1;
+		}
+		else if (response[0] == -1) {
+			System.out.println("Connection to db failed");
+			return -1;
 		}
 		System.out.println("Access denied!");
-		return false;
+		return 0;
 	}
 	
 	private boolean loadGroups() {	
@@ -140,7 +144,9 @@ public class DatabaseClient {
 			return false;
 		}
 		int[] response;
-		response = query("3",  contacts.get(name));
+		String[] options = new String[1];
+		options[0] = contacts.get(name)[2];
+		response = query("3",  options);
 		if(response[0] == 1) {
 			contacts.remove(name);
 			// Remove contact's membership in all groups
@@ -162,6 +168,22 @@ public class DatabaseClient {
 			return false;
 		}
 		return true;
+	}
+	
+	public void removeGroup(String name) {
+		if(!groups.containsKey(name)) {
+			System.out.println("Error tried to remove group: Group does not exist");
+			return;
+		}
+		String[] options = new String[1];
+		options[0] = groups.get(name)[1];
+		int[] response = query("7", options);
+		if (response[0] != 1) {
+			System.out.println("Failed to remove group in external db");
+			return;
+		}
+		groups.remove(name);
+		contacts_in_group.remove(name);
 	}
 	
 	private boolean saveGroup(String[] options) {
@@ -210,7 +232,7 @@ public class DatabaseClient {
 		return true;
 	}
 	
-	private void openConnection() {
+	private boolean openConnection() {
 		try {
 	    	s = new Socket(host, port);
 			output = new PrintWriter(s.getOutputStream());
@@ -218,32 +240,20 @@ public class DatabaseClient {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 	
 	public int[] query(String type, String[] options) {
-		openConnection();
+		if(!openConnection())
+			return new int[]{-1};
 		output.println(type);
 		output.println(user);
 		output.println(password);
-		int i = Integer.parseInt(type);
-		switch (i) {
-			case 3: //Remove contact [contact_id]
-				output.println(options[2]);
-				break;
-			case 4: //Add contact [name, phone, email, group_id, alla_group_id]
-				output.println(options[0]);
-				output.println(options[1]);
-				output.println(options[2]);
-				output.println(options[3]);
-				output.println(options[4]);
-				break;
-			case 5:
-				output.println(options[0]);
-				output.println(options[1]);
-				break;
-			default:
-				break;
+		if(options!= null) {
+			for(String out : options)
+				output.println(out);
 		}
 		output.flush();
 		return receiveMessage();

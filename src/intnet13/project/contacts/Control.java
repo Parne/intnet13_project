@@ -46,15 +46,20 @@ public class Control {
 		public void onClick(View v) {
 			switch (v.getId()){
 			case R.id.loginButton:
-				if(mdb.authenticate(This.userName.getText().toString(), 
-						This.password.getText().toString())){
+				int authenticate = mdb.authenticate(This.userName.getText().toString(), 
+						This.password.getText().toString());
+				if(authenticate == 1){
 					This.vs.showNext();
 					This.fillGroup(mdb.getGroups());
 					This.fillcontactList(mdb.getContacts());
 				}
-				else
+				else if (authenticate == -1)
 					Toast.makeText(This,
-							"Fel användarnamn/lösenord",
+							"Kunde inte ansluta till servern",
+							Toast.LENGTH_SHORT).show();
+				else 
+					Toast.makeText(This,
+							"Fel anvandarnamn/losenord",
 							Toast.LENGTH_SHORT).show();
 				break;
 			

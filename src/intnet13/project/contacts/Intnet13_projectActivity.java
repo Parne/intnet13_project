@@ -44,7 +44,7 @@ public class Intnet13_projectActivity extends Activity {
     	System.out.println("Yolo Parne!");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mdb = new modelDB();
+        mdb = new modelDB("130.237.223.174");
         Control c = new Control(this, mdb);
         
         vs = (ViewSwitcher)findViewById(R.id.viewSwitcher1);

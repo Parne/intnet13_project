@@ -172,14 +172,12 @@ public class DatabaseClient {
 			System.out.println("Failed to save group to external db");
 			return false;
 		}
-		// response[1] = new group_id
 		addGroup(options[0], options[1], Integer.toString(response[1]));
 		return true;
 	}
 	
 	public boolean saveContact(String contactName, String phoneNumber, String email,
 			String group) {
-		System.out.println("New contact into group: " + group );
 		if(contacts.containsKey(contactName))
 			return false;
 		if(!groups.containsKey(group)) {
@@ -190,11 +188,12 @@ public class DatabaseClient {
 				return false;
 		}
 		String g_id = groups.get(group)[1];
-		String[] options = new String[4];
+		String[] options = new String[5];
 		options[0] = contactName;
 		options[1] = phoneNumber;
 		options[2] = email;
 		options[3] = g_id;
+		options[4] = groups.get("Alla")[1]; 
 		int[] response;
 		response = query("4",  options);
 		if(response[0] != 1) {
@@ -203,34 +202,9 @@ public class DatabaseClient {
 		}
 		addContact(contactName, phoneNumber, email, Integer.toString(response[1]));
 		addContactInGroup(group, contactName);
+		if(!group.equals("Alla")) 
+			addContactInGroup("Alla", contactName);
 		return true;
-	}
-	
-	private void debugPrint() {
-		System.out.println("*** User_groups ***");
-		Iterator it = groups.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        String [] i = (String[]) pairs.getValue();
-	        System.out.println(pairs.getKey() + " " + i[0] + " " + i[1]);
-	    }
-	    System.out.println("\n*** Contacts ***");
-	    Iterator ut = contacts.entrySet().iterator();
-	    while (ut.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)ut.next();
-	        String [] info = (String[]) pairs.getValue();
-	        System.out.println(pairs.getKey() + " " + info[0] + " " + info[1] + " " + info[2]);
-	    } 
-	    System.out.println("\n*** Contacts_in_group ***");
-	    Iterator at = contacts_in_group.entrySet().iterator();
-	    while (at.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)at.next();
-	        ArrayList<String> info = (ArrayList<String>) pairs.getValue();
-	        System.out.println(pairs.getKey());
-	        for(String a: info)
-	        	System.out.println(a);
-	        System.out.println();
-	    }
 	}
 	
 	private void openConnection() {
@@ -240,16 +214,6 @@ public class DatabaseClient {
 			input = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		}
 		catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private void closeConnection() {
-		try {
-			output.close();
-			input.close();
-			s.close();
-		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -264,11 +228,12 @@ public class DatabaseClient {
 			case 3: //Remove contact [contact_id]
 				output.println(options[2]);
 				break;
-			case 4: //Add contact [name, phone, email, group_id]
+			case 4: //Add contact [name, phone, email, group_id, alla_group_id]
 				output.println(options[0]);
 				output.println(options[1]);
 				output.println(options[2]);
 				output.println(options[3]);
+				output.println(options[4]);
 				break;
 			case 5:
 				output.println(options[0]);
@@ -291,18 +256,8 @@ public class DatabaseClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//System.out.println("Status: " + response[0] + "\nRows: " + response[1]);
 		return response;
 	}
-
-	
-	public static void main(String[] args) throws Exception{
-    	String host = args[0];
-		int port = Integer.parseInt(args[1]);
-		String user = args[2];
-		String password = args[3];
-    	new DatabaseClient(host, port, user, password);
-    }
 	
 	public String[] getGroups() {
 		String[] res = new String[groups.size()];
@@ -348,32 +303,9 @@ public class DatabaseClient {
 		}
 		return res;
 	}
-	public String[] search(String contactName) {
-		contactName = contactName.toLowerCase();
-		System.out.println("Searching for " + contactName);
-		String current;
-		ArrayList<String> found = new ArrayList<String>();
-		Iterator it = contacts.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        current = (String) pairs.getKey();
-	        System.out.println("Current = " + current.toLowerCase());
-	        if(current.toLowerCase().contains(contactName)) {
-	        	found.add(current);
-	        	System.out.println("Found match!");
-	        }
-	    }
-	    String[] res = new String[found.size()];
-	    for (int i = 0; i<found.size(); i++)
-	    	res[i] = found.get(i);	    	
-		return res;
-	}
 	public String[] getByGroup(String groupName) {
-		// Done
 		if(groupName.equals("Alla"))
 			return getContacts();
-		//String[] temp = {groupName+"1", groupName+"2", groupName+"3"};
-		//return temp;
 		if(!groups.containsKey(groupName))
 			return new String[]{""};
 		ArrayList<String> groupMembers = contacts_in_group.get(groupName);
@@ -393,7 +325,6 @@ public class DatabaseClient {
 		res[0] = contactName;
 		res[1] = info[0];
 		res[2] = info[1];
-		//return new String[]{contactName, "070-0707070", "test@noob.com"};
 		return res;
 	}
 }

@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -273,7 +274,7 @@ public class DatabaseClient {
 	        if(!currentGroup.equals("Alla"))
 	        	groupList.add(currentGroup);
 	    }
-	    Collections.sort(groupList);
+	    sortList(groupList);
 	    for(int i = 0; i< groupList.size(); i++) 
 	    	res[i+1] = groupList.get(i);
 		return res;
@@ -291,7 +292,7 @@ public class DatabaseClient {
 			if(a.toLowerCase().contains(contactName))
 				found.add(a);
 		}
-		Collections.sort(found);
+		sortList(found);
 		String[] res = new String[found.size()];
 		for (int i = 0; i<found.size(); i++) {
 			res[i] = found.get(i);
@@ -322,4 +323,28 @@ public class DatabaseClient {
 		res[2] = info[1];
 		return res;
 	}
+	
+	
+	private void sortList(List<String> list) {
+		Collections.sort(list, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				o1 = o1.toLowerCase();
+				o2 = o2.toLowerCase();
+				int length = o1.length() > o2.length() ? o2.length() : o1.length();
+				/**int length;
+				if (o1.length() < o2.length())
+					length = o1.length();
+				else
+					length = o2.length();*/
+				for (int i = 0; i<length; i++) {
+					if (o1.charAt(i) < o2.charAt(i))
+						return -1;
+					if (o1.charAt(i) > o2.charAt(i))
+						return 1;
+				}
+				return 0; }
+			});
+	}
+
 }

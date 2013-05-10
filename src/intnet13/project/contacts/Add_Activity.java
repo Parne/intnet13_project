@@ -23,6 +23,7 @@ public class Add_Activity extends Activity {
 	public Button removeButton;
 	
 	public static modelDB mdb;
+	public static Control c;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,7 +33,7 @@ public class Add_Activity extends Activity {
         System.out.println("in:start");
         //mdb = new modelDB();//(modelDB) getIntent().getSerializableExtra("mdb");
          System.out.println("in:1");
-        Control c = new Control(this, mdb);
+        c.addActivity(this);
         System.out.println("in:2");
         
         name = (EditText)this.findViewById(R.id.name);
@@ -44,60 +45,29 @@ public class Add_Activity extends Activity {
     	adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	groupSpinner.setAdapter(adapter1);
         newGroup = (EditText)this.findViewById(R.id.newGroupName);
+
+        
+        editButton = (Button)this.findViewById(R.id.editContact);   
+        editButton.setOnClickListener(c.getButtonListener());        
+        saveButton = (Button)this.findViewById(R.id.save);        
+        saveButton.setOnClickListener(c.getButtonListener());        
+        removeButton = (Button)this.findViewById(R.id.remove);        
+        removeButton.setOnClickListener(c.getButtonListener());
+        
         
         String temp = getIntent().getStringExtra("contactName");
         System.out.println("in:3");
         if(temp != null){
         	name.setText(temp);
         	String[] cInfo = mdb.getContactInfo(temp);
-        	phoneNumber.setText(cInfo[1]);
-        	email.setText(cInfo[2]);
         	
-        	editable(false);
+        	phoneNumber.setText(cInfo[1]);
+        	email.setText(cInfo[2]);        	
+
+            editable(false);
         }
+        System.out.println("in:4");
         
-        editButton = (Button)this.findViewById(R.id.editContact);        
-        editButton.setOnClickListener(c.getButtonListener());/*new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				editable(true);
-			}
-		});*/
-        
-        saveButton = (Button)this.findViewById(R.id.save);        
-        saveButton.setOnClickListener(c.getButtonListener());/*new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				String group = groupSpinner.getSelectedItem().toString();
-				if(groupSpinner.getSelectedItemPosition() == 0)
-					group = newGroup.getText().toString();
-<<<<<<< HEAD
-				mdb.saveContact(name.getText().toString(), "challe",
-=======
-				System.out.println("Group: " + group);
-				mdb.saveContact(name.getText().toString(),
->>>>>>> 58f5758fc5d0b9f94fde234a771838ba0d2993fe
-						phoneNumber.getText().toString(),
-						email.getText().toString(),
-						group);
-				editable(false);
-			}
-		});*/
-        
-        removeButton = (Button)this.findViewById(R.id.remove);        
-        removeButton.setOnClickListener(c.getButtonListener());/*new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				mdb.remove(name.getText().toString());
-				setResult(RESULT_OK);
-		        finish();
-			}
-		});
-        //setResult(RESULT_OK);
-        //finish();*/
 	}
 	
 	public void editable(boolean edit){
@@ -106,5 +76,7 @@ public class Add_Activity extends Activity {
 		email.setEnabled(edit);
 		groupSpinner.setEnabled(edit);
 		newGroup.setEnabled(edit);
+		saveButton.setEnabled(edit);
+		removeButton.setEnabled(edit);
 	}
 }

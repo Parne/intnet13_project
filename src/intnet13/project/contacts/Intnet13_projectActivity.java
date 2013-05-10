@@ -24,13 +24,15 @@ import android.widget.ViewSwitcher;
 
 public class Intnet13_projectActivity extends Activity {
 	public EditText userName;
+	public EditText password;
 	public Button loginButton;
 	public ViewSwitcher vs;
 	public EditText searchText;
 	public Button searchButton;
 	public Button addButton;
+	public Button deleteButton;
 	public Spinner groupSpinner;	
-	public ListView contactList;
+	public ListView contactList;	
 	
 	private  modelDB mdb;
 	
@@ -43,15 +45,18 @@ public class Intnet13_projectActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         mdb = new modelDB();
-        Control c = new Control(this);
+        Control c = new Control(this, mdb);
         
         vs = (ViewSwitcher)findViewById(R.id.viewSwitcher1);
         userName = (EditText)findViewById(R.id.username);
+        password = (EditText)findViewById(R.id.password);
         loginButton = (Button)this.findViewById(R.id.loginButton);        
         loginButton.setOnClickListener(c.getButtonListener());        
         searchText = (EditText)findViewById(R.id.searchText);
         searchButton = (Button)this.findViewById(R.id.searchButton);        
-        searchButton.setOnClickListener(c.getButtonListener());        
+        searchButton.setOnClickListener(c.getButtonListener());         
+        deleteButton = (Button)this.findViewById(R.id.deleteButton);        
+        deleteButton.setOnClickListener(c.getButtonListener());    
         addButton = (Button)this.findViewById(R.id.addButton);        
         addButton.setOnClickListener(c.getButtonListener());        
         groupSpinner = (Spinner)this.findViewById(R.id.groupPicker);

@@ -89,21 +89,21 @@
                     android:text="Tabort" />
 
                 <Button
-                    android:id="@+id/save"
+                    android:id="@+id/editContact"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_toLeftOf="@+id/remove"
-                    android:layout_toRightOf="@+id/editContact"
-                    android:text="Spara" />
+                    android:layout_toRightOf="@+id/save"
+                    android:text="Ändra" />
 
                 <Button
-                    android:id="@+id/editContact"
+                    android:id="@+id/save"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:text="Ändra" />
+                    android:text="Spara" />
 
             </RelativeLayout>
 

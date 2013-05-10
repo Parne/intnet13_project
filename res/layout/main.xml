@@ -4,11 +4,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" >
 
-    <include
+   <include
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        layout="@layout/login" />
+        layout="@layout/login" /> 
        
 	<RelativeLayout 
 	    android:layout_width="fill_parent"
@@ -41,7 +41,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_alignParentLeft="true"
 	        android:layout_below="@+id/searchButton"
-	        android:layout_toLeftOf="@+id/addButton" />
+	        android:layout_toLeftOf="@+id/deleteButton" />
 	
 	    <Button
 	        android:id="@+id/addButton"
@@ -58,6 +58,14 @@
 	        android:layout_below="@+id/groupPicker" >
 
 	    </ListView>
+
+	    <Button
+	        android:id="@+id/deleteButton"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignTop="@+id/groupPicker"	        
+	        android:layout_alignRight="@+id/searchText"
+	        android:text=" X " />
 	
 	</RelativeLayout>
 </ViewSwitcher>

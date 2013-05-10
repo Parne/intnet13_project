@@ -38,10 +38,10 @@ public class modelDB implements Serializable {
 	//
 	// Obsolete !!!!
 	//
-	public String[] search(String contactName) {
+	/**public String[] search(String contactName) {
 		return search(contactName, "Alla");		
 	}
-	
+	*/
 	/**
 	 * Search for contacts within a group
 	 * @param contactName

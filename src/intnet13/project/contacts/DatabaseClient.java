@@ -286,6 +286,8 @@ public class DatabaseClient {
 	
 	public String[] search(String contactName, String groupName) {
 		ArrayList<String> contacts = contacts_in_group.get(groupName);
+		if(contacts == null)
+			return new String[]{""};
 		List<String> found = new ArrayList<String>();
 		contactName = contactName.toLowerCase();
 		for (String a : contacts) {
@@ -304,8 +306,11 @@ public class DatabaseClient {
 			return getContacts();
 		if(!groups.containsKey(groupName))
 			return new String[]{""};
-		ArrayList<String> groupMembers = contacts_in_group.get(groupName);
+		List<String> groupMembers = contacts_in_group.get(groupName);
+		if(groupMembers == null)
+			return new String[]{""};
 		String[] res = new String[groupMembers.size()];
+		sortList(groupMembers);
 		for (int i = 0; i<groupMembers.size(); i++) {
 			res[i] = groupMembers.get(i);
 		}
@@ -317,13 +322,37 @@ public class DatabaseClient {
 		if(!contacts.containsKey(contactName))
 			return new String[]{""};
 		String[] info = contacts.get(contactName);
-		String[] res = new String[info.length];
+		String[] res = new String[info.length+1];
 		res[0] = contactName;
 		res[1] = info[0];
 		res[2] = info[1];
+		res[3] = getMembership(contactName);
 		return res;
 	}
 	
+	// Return all groups a contact belongs to
+	private String getMembership(String name) {
+		String currentGroup;
+		Iterator it = contacts_in_group.entrySet().iterator();
+		ArrayList<String> currentMembers;
+		List<String> groupList = new ArrayList<String>();		
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        currentGroup = (String) pairs.getKey();
+	        currentMembers = contacts_in_group.get(currentGroup);
+	        for (String a : currentMembers) {
+	        	if(a.equals(name))
+	        		groupList.add(currentGroup);
+	        }
+	    }
+	    sortList(groupList);
+	    String[] res = new String[groupList.size()];
+	    for(int i = 0; i< groupList.size(); i++) 
+	    	res[i] = groupList.get(i);
+	    if(groupList.size() == 1)
+	    	return res[0];
+		return res[1];
+	}
 	
 	private void sortList(List<String> list) {
 		Collections.sort(list, new Comparator<String>() {
@@ -332,11 +361,6 @@ public class DatabaseClient {
 				o1 = o1.toLowerCase();
 				o2 = o2.toLowerCase();
 				int length = o1.length() > o2.length() ? o2.length() : o1.length();
-				/**int length;
-				if (o1.length() < o2.length())
-					length = o1.length();
-				else
-					length = o2.length();*/
 				for (int i = 0; i<length; i++) {
 					if (o1.charAt(i) < o2.charAt(i))
 						return -1;
@@ -346,5 +370,4 @@ public class DatabaseClient {
 				return 0; }
 			});
 	}
-
 }

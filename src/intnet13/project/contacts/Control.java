@@ -92,7 +92,7 @@ public class Control {
 				String group = ThisAdd.groupSpinner.getSelectedItem().toString();
 				System.out.println("At pos: " + ThisAdd.groupSpinner.getSelectedItemPosition() + "\nGroup name: "+group);
 				if(ThisAdd.groupSpinner.getSelectedItemPosition() == 0 &&
-						ThisAdd.newGroup.getText().toString().equals(""))
+						!ThisAdd.newGroup.getText().toString().equals(""))
 					group = ThisAdd.newGroup.getText().toString();
 				System.out.println("Group: " + group);
 				mdb.saveContact(ThisAdd.name.getText().toString(),
@@ -102,14 +102,16 @@ public class Control {
 				ThisAdd.editable(false);
 				This.fillcontactList(mdb.getContacts());
 				This.fillGroup(mdb.getGroups());
+				ThisAdd.setResult(ThisAdd.RESULT_OK);
+				ThisAdd.finish();
 				break;		
 			
 			case R.id.remove:
-				mdb.remove(ThisAdd.name.getText().toString());
-				ThisAdd.setResult(ThisAdd.RESULT_OK);
-				ThisAdd.finish();
+				mdb.remove(ThisAdd.name.getText().toString());				
 				This.fillcontactList(mdb.getContacts());
 				This.fillGroup(mdb.getGroups());
+				ThisAdd.setResult(ThisAdd.RESULT_OK);
+				ThisAdd.finish();
 		        break;
 			}
 		}

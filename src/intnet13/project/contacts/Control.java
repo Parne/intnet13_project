@@ -15,7 +15,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 /**
- * Flytta all controll?
+ * Flytta all control?
  * @author Jesper
  *
  */
@@ -74,11 +74,14 @@ public class Control {
 					This.startActivityForResult(i, 0);
 					System.out.println("done");
 					This.fillcontactList(mdb.getContacts());
+					This.fillGroup(mdb.getGroups());
 				break;
 				
 			case R.id.searchButton:
 				//skicka med grupp plz
-				This.fillcontactList(mdb.search(This.searchText.getText().toString()));
+				//This.fillcontactList(mdb.search(This.searchText.getText().toString()));
+				This.fillcontactList(mdb.search(This.searchText.getText().toString(),
+						(String)((TextView) This.groupSpinner.getSelectedView()).getText()));
 				break;
 			
 			case R.id.editContact:
@@ -87,8 +90,9 @@ public class Control {
 				
 			case R.id.save:
 				String group = ThisAdd.groupSpinner.getSelectedItem().toString();
-				System.out.println("At pos: " + ThisAdd.groupSpinner.getSelectedItemPosition());
-				if(ThisAdd.groupSpinner.getSelectedItemPosition() == 0)
+				System.out.println("At pos: " + ThisAdd.groupSpinner.getSelectedItemPosition() + "\nGroup name: "+group);
+				if(ThisAdd.groupSpinner.getSelectedItemPosition() == 0 &&
+						ThisAdd.newGroup.getText().toString().equals(""))
 					group = ThisAdd.newGroup.getText().toString();
 				System.out.println("Group: " + group);
 				mdb.saveContact(ThisAdd.name.getText().toString(),
@@ -96,6 +100,8 @@ public class Control {
 						ThisAdd.email.getText().toString(),
 						group);
 				ThisAdd.editable(false);
+				This.fillcontactList(mdb.getContacts());
+				This.fillGroup(mdb.getGroups());
 				break;		
 			
 			case R.id.remove:

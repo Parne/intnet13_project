@@ -66,6 +66,10 @@ public class Add_Activity extends Activity {
 
             editable(false);
         }
+        else{
+        	editButton.setEnabled(false);
+        	removeButton.setEnabled(false);
+        }
         System.out.println("in:4");
         
 	}

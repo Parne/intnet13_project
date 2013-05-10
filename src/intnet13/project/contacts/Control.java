@@ -28,14 +28,15 @@ public class Control {
 	private ListListener ll = new ListListener();
 	private SpinnerListener sl = new SpinnerListener();
 	
-	public Control(Intnet13_projectActivity _This){		
+	private Control c = this;
+	
+	public Control(Intnet13_projectActivity _This, modelDB _mdb){		
 		This = _This;
-		mdb = new modelDB();
+		mdb = _mdb;
 	}
 	
-	public Control(Add_Activity _This, modelDB _mdb){		
+	public void addActivity(Add_Activity _This){		
 		ThisAdd = _This;
-		mdb = _mdb;
 	}
 	
 	public ButtonListener getButtonListener(){return bl;}
@@ -45,7 +46,8 @@ public class Control {
 		public void onClick(View v) {
 			switch (v.getId()){
 			case R.id.loginButton:
-				if(mdb.authenticate(This.userName.getText().toString(), "password")){
+				if(mdb.authenticate(This.userName.getText().toString(), 
+						This.password.getText().toString())){
 					This.vs.showNext();
 					This.fillGroup(mdb.getGroups());
 					This.fillcontactList(mdb.getContacts());
@@ -56,9 +58,16 @@ public class Control {
 							Toast.LENGTH_SHORT).show();
 				break;
 			
+			case R.id.deleteButton:
+				mdb.deleteGroup((String)((TextView) This.groupSpinner.getSelectedView()).getText());
+				This.fillGroup(mdb.getGroups());
+				This.fillcontactList(mdb.getContacts());
+				break;
+				
 			case R.id.addButton:
 				System.out.println("start");
 					Add_Activity.mdb = mdb;
+					Add_Activity.c = c;
 					Intent i = new Intent(This, Add_Activity.class);	
 					//i.putExtra("mdb", mdb);
 					System.out.println("middle");
@@ -68,6 +77,7 @@ public class Control {
 				break;
 				
 			case R.id.searchButton:
+				//skicka med grupp plz
 				This.fillcontactList(mdb.search(This.searchText.getText().toString()));
 				break;
 			
@@ -93,6 +103,7 @@ public class Control {
 				ThisAdd.setResult(ThisAdd.RESULT_OK);
 				ThisAdd.finish();
 				This.fillcontactList(mdb.getContacts());
+				This.fillGroup(mdb.getGroups());
 		        break;
 			}
 		}
@@ -106,6 +117,7 @@ public class Control {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
 			Add_Activity.mdb = mdb;
+			Add_Activity.c = c;
 			Intent i = new Intent(This, Add_Activity.class);	
 	    	//i.putExtra("mdb", mdb);
 	    	i.putExtra("contactName", (String) ((TextView) arg1).getText());

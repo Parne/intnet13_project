@@ -92,5 +92,9 @@ public class modelDB implements Serializable {
 		//return new String[]{contactName, "070-0707070", "test@noob.com"};
 		return myClient.getContactInfo(contactName);
 	}
+	public void deleteGroup(String group) {
+		if(group.equals("Alla")) return;
+		System.out.println("Delete:"+ group);		
+	}
 
 }

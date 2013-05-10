@@ -22,11 +22,20 @@
             <requestFocus />
         </EditText>
 
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/username"
+            android:layout_centerInParent="true"
+            android:inputType="textPassword"
+            android:minWidth="200dp" />
+
         <Button
             android:id="@+id/loginButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/username"
+            android:layout_below="@id/password"
             android:layout_centerInParent="true"
             android:text="Login" />
 

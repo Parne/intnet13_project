@@ -3,8 +3,10 @@ package intnet13.project.contacts;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -262,41 +264,34 @@ public class DatabaseClient {
 	public String[] getGroups() {
 		String[] res = new String[groups.size()];
 		Iterator it = groups.entrySet().iterator();
+		List<String> groupList = new ArrayList<String>();
 		res[0] = "Alla";
 		String currentGroup;
-		int i = 1;
 	    while (it.hasNext()) {
 	        Map.Entry pairs = (Map.Entry)it.next();
 	        currentGroup = (String) pairs.getKey();
-	        if(currentGroup.equals("Alla"))
-	        	i--;
-	        else
-	        	res[i] = currentGroup;
-	        i++;
+	        if(!currentGroup.equals("Alla"))
+	        	groupList.add(currentGroup);
 	    }
+	    Collections.sort(groupList);
+	    for(int i = 0; i< groupList.size(); i++) 
+	    	res[i+1] = groupList.get(i);
 		return res;
 	}
 	
 	public String[] getContacts() {
-		String[] res = new String[contacts.size()];
-		Iterator it = contacts.entrySet().iterator();
-		int i = 0;
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        res[i] = (String) pairs.getKey();
-	        i++;
-	    }
-		return res;
+		return search("", "Alla");
 	}
 	
 	public String[] search(String contactName, String groupName) {
 		ArrayList<String> contacts = contacts_in_group.get(groupName);
-		ArrayList<String> found = new ArrayList<String>();
+		List<String> found = new ArrayList<String>();
 		contactName = contactName.toLowerCase();
 		for (String a : contacts) {
 			if(a.toLowerCase().contains(contactName))
 				found.add(a);
 		}
+		Collections.sort(found);
 		String[] res = new String[found.size()];
 		for (int i = 0; i<found.size(); i++) {
 			res[i] = found.get(i);

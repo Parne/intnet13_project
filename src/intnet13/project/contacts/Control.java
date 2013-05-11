@@ -27,6 +27,7 @@ public class Control {
 	private ButtonListener bl = new ButtonListener();
 	private ListListener ll = new ListListener();
 	private SpinnerListener sl = new SpinnerListener();
+	private GroupListListener gll = new GroupListListener();
 	
 	private Control c = this;
 	
@@ -46,7 +47,8 @@ public class Control {
 		public void onClick(View v) {
 			switch (v.getId()){
 			case R.id.loginButton:
-				int authenticate = mdb.authenticate("130.237.223.174", This.userName.getText().toString(), 
+				int authenticate = mdb.authenticate(This.ipText.getText().toString(),
+						This.userName.getText().toString(), 
 						This.password.getText().toString());
 				if(authenticate == 1){
 					This.vs.showNext();
@@ -83,27 +85,30 @@ public class Control {
 				break;
 				
 			case R.id.searchButton:
-				//skicka med grupp plz
-				//This.fillcontactList(mdb.search(This.searchText.getText().toString()));
 				This.fillcontactList(mdb.search(This.searchText.getText().toString(),
 						(String)((TextView) This.groupSpinner.getSelectedView()).getText()));
 				break;
 			
-			case R.id.editContact:
-				ThisAdd.editable(true);
-				break;
-				
-			case R.id.save:
+			case R.id.addGroup:
 				String group = ThisAdd.groupSpinner.getSelectedItem().toString();
 				System.out.println("At pos: " + ThisAdd.groupSpinner.getSelectedItemPosition() + "\nGroup name: "+group);
 				if(ThisAdd.groupSpinner.getSelectedItemPosition() == 0 &&
 						!ThisAdd.newGroup.getText().toString().equals(""))
 					group = ThisAdd.newGroup.getText().toString();
 				System.out.println("Group: " + group);
+				
+				break;
+				
+			case R.id.editContact:
+				ThisAdd.editable(true);
+				break;
+				
+			case R.id.save:
+				//prep for groupsave;
 				mdb.saveContact(ThisAdd.name.getText().toString(),
 						ThisAdd.phoneNumber.getText().toString(),
 						ThisAdd.email.getText().toString(),
-						group);
+						"");
 				ThisAdd.editable(false);
 				This.fillcontactList(mdb.getContacts());
 				This.fillGroup(mdb.getGroups());
@@ -132,10 +137,23 @@ public class Control {
 			Add_Activity.mdb = mdb;
 			Add_Activity.c = c;
 			Intent i = new Intent(This, Add_Activity.class);	
-	    	//i.putExtra("mdb", mdb);
 	    	i.putExtra("contactName", (String) ((TextView) arg1).getText());
 			This.startActivityForResult(i, 0);
 			This.fillcontactList(mdb.getContacts());
+		}
+	}
+	
+	public GroupListListener getGroupListListener(){return gll;}
+	public class GroupListListener implements OnItemClickListener{
+
+		@Override
+		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+			//tabort rad och delete fron mdb
+			mdb.removeContactFromGroup(ThisAdd.name.getText().toString(),
+					((TextView)arg1).getText().toString());
+			//Update the grouplist
+			//ThisAdd.fillGroupList(null);
 		}
 	}
 	

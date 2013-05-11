@@ -18,11 +18,12 @@ public class modelDB implements Serializable {
 	/**
 	 * @param user
 	 * @param password
+	 * @param string 
 	 * @return
 	 */
 	public int authenticate(String host, String user, String password) {
 		myClient = new DatabaseClient(host, 4545, user, password);
-		return myClient.authenticate();		
+		return myClient.authenticate();	
 	}
 
 	//ifall ArrayList är att föredra går det att ändra.
@@ -79,6 +80,11 @@ public class modelDB implements Serializable {
 	public void deleteGroup(String group) {
 		if(group.equals("Alla")) return;
 		myClient.removeGroup(group);	
+	}
+
+	public void removeContactFromGroup(String string, String string2) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

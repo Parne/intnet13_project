@@ -42,6 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
+                android:hint="070 333 22 22"
                 android:inputType="phone" />
 
             <TextView
@@ -57,6 +58,12 @@
                 android:ems="10"
                 android:hint="user@domain"
                 android:inputType="textEmailAddress" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Välj grupp" />
 
             <Spinner
                 android:id="@+id/groupPickerSinner"
@@ -75,6 +82,25 @@
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="gruppnamn" />
+
+            <Button
+                android:id="@+id/addGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lägg till grupp" />
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Klicka på en grupp för att tabort den." />
+
+            <ListView
+                android:id="@+id/currentGroups"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="34dp" >
+            </ListView>
 
             <RelativeLayout
                 android:layout_width="match_parent"

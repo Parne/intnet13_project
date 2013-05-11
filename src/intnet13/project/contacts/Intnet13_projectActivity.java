@@ -23,6 +23,7 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 public class Intnet13_projectActivity extends Activity {
+	public EditText ipText;
 	public EditText userName;
 	public EditText password;
 	public Button loginButton;
@@ -47,6 +48,7 @@ public class Intnet13_projectActivity extends Activity {
         Control c = new Control(this, mdb);
         
         vs = (ViewSwitcher)findViewById(R.id.viewSwitcher1);
+        ipText = (EditText) findViewById(R.id.ipAddress);
         userName = (EditText)findViewById(R.id.username);
         password = (EditText)findViewById(R.id.password);
         loginButton = (Button)this.findViewById(R.id.loginButton);        

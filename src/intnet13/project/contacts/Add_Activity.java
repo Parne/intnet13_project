@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ public class Add_Activity extends Activity {
 	public Button editButton;
 	public Button saveButton;
 	public Button removeButton;
+	public ListView currentGroups;
 	
 	public static modelDB mdb;
 	public static Control c;
@@ -46,7 +48,8 @@ public class Add_Activity extends Activity {
     	groupSpinner.setAdapter(adapter1);
         newGroup = (EditText)this.findViewById(R.id.newGroupName);
 
-        
+        currentGroups = (ListView)this.findViewById(R.id.currentGroups);
+        currentGroups.setOnItemClickListener(c.getGroupListListener());
         editButton = (Button)this.findViewById(R.id.editContact);   
         editButton.setOnClickListener(c.getButtonListener());        
         saveButton = (Button)this.findViewById(R.id.save);        
@@ -63,8 +66,9 @@ public class Add_Activity extends Activity {
         	
         	phoneNumber.setText(cInfo[1]);
         	email.setText(cInfo[2]);
-
-        	groupSpinner.setSelection(adapter1.getPosition(cInfo[3]));
+        	
+        	fillGroupList(new String[]{"KTH", "SU"});
+        	//groupSpinner.setSelection(adapter1.getPosition(cInfo[3]));
 
             editable(false);
         }
@@ -85,4 +89,11 @@ public class Add_Activity extends Activity {
 		saveButton.setEnabled(edit);
 		removeButton.setEnabled(edit);
 	}
+	
+	public void fillGroupList(String[] list){
+    	ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+    				android.R.layout.simple_list_item_1,
+    				list);
+    	currentGroups.setAdapter(arrayAdapter); 
+    }
 }

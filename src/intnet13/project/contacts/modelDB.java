@@ -9,9 +9,6 @@ import android.widget.EditText;
 
 public class modelDB implements Serializable {
 	private DatabaseClient myClient;
-	public modelDB(String ipAddress) {
-		myClient = new DatabaseClient(ipAddress, 4545, "admin", "admin");
-	}
 	
 	public modelDB() {
 	}
@@ -67,8 +64,6 @@ public class modelDB implements Serializable {
 		myClient.removeContact(name);		
 	}
 
-	// !!! FIX !!! Nar save into Alla, blir group = "",
-	// satt group = "Alla"
 	public void saveContact(String contactName, String phoneNumber, String email,
 			String group) {
 		myClient.saveContact(contactName, phoneNumber, email, group);		

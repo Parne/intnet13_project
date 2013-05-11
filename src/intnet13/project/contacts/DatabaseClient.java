@@ -30,6 +30,7 @@ public class DatabaseClient {
 		this.user = user;
 		this.password = password;
 	}
+	
 	private void init() {
 		contacts = new HashMap<String, String[]>();
 		groups = new HashMap<String, String[]>();

@@ -12,13 +12,16 @@ public class modelDB implements Serializable {
 	public modelDB(String ipAddress) {
 		myClient = new DatabaseClient(ipAddress, 4545, "admin", "admin");
 	}
+	
+	public modelDB() {
+	}
 	/**
 	 * @param user
 	 * @param password
 	 * @return
 	 */
-	public int authenticate(String user, String password) {
-		myClient = new DatabaseClient("130.237.223.174", 4545, user, password);
+	public int authenticate(String host, String user, String password) {
+		myClient = new DatabaseClient(host, 4545, user, password);
 		return myClient.authenticate();		
 	}
 
@@ -34,14 +37,7 @@ public class modelDB implements Serializable {
 	public String[] getContacts() {
 		return myClient.getContacts();
 	}
-	
-	//
-	// Obsolete !!!!
-	//
-	/**public String[] search(String contactName) {
-		return search(contactName, "Alla");		
-	}
-	*/
+
 	/**
 	 * Search for contacts within a group
 	 * @param contactName

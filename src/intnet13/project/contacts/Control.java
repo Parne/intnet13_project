@@ -46,7 +46,7 @@ public class Control {
 		public void onClick(View v) {
 			switch (v.getId()){
 			case R.id.loginButton:
-				int authenticate = mdb.authenticate(This.userName.getText().toString(), 
+				int authenticate = mdb.authenticate("130.237.223.174", This.userName.getText().toString(), 
 						This.password.getText().toString());
 				if(authenticate == 1){
 					This.vs.showNext();

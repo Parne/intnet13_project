@@ -3,19 +3,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <EditText
+        android:id="@+id/ipAddress"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true" >
+        android:minWidth="200dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:inputType="numberDecimal"
+        android:text="130.237.223.174" />
 
         <EditText
             android:id="@+id/username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="true"
+            android:layout_below="@id/ipAddress"
+            android:layout_centerHorizontal="true"
             android:hint="Användarnamn"
             android:minWidth="200dp" >
 
@@ -27,8 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/username"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"
             android:inputType="textPassword"
+            android:hint="Lösenord"
             android:minWidth="200dp" />
 
         <Button
@@ -36,20 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/password"
-            android:layout_centerInParent="true"
+            android:layout_centerHorizontal="true"            
             android:text="Login" />
-
-    </RelativeLayout>
-
-    <EditText
-        android:id="@+id/ipAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:ems="10"
-        android:gravity="center_vertical|center_horizontal"
-        android:inputType="numberDecimal"
-        android:text="130.237.223.174" />
 
 </RelativeLayout>

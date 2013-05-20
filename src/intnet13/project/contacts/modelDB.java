@@ -77,7 +77,19 @@ public class modelDB implements Serializable {
 		myClient.removeGroup(group);	
 	}
 
-	public void removeContactFromGroup(String string, String string2) {
+	public void removeContactFromGroup(String name, String group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateContact(String oldName, String contactName, String phoneNumber, String email,
+			String[] group) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void updateContact(String oldName, String contactName, String phoneNumber, String email,
+			String[] addGroups, String[] removeGroups) {
 		// TODO Auto-generated method stub
 		
 	}

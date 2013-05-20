@@ -1,5 +1,8 @@
 package intnet13.project.contacts;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ public class Add_Activity extends Activity {
 	public EditText email;
 	public Spinner groupSpinner;
 	public EditText newGroup;
+	public Button addGroupButton;
 	public Button editButton;
 	public Button saveButton;
 	public Button removeButton;
@@ -26,6 +30,11 @@ public class Add_Activity extends Activity {
 	
 	public static modelDB mdb;
 	public static Control c;
+	public String oldName = null;
+	private ArrayAdapter<String> glistAdapter;
+	public ArrayList<String> groups = new ArrayList<String>();
+	public ArrayList<String> addGroups = new ArrayList<String>();
+	public ArrayList<String> removeGroups = new ArrayList<String>();
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,8 +57,13 @@ public class Add_Activity extends Activity {
     	groupSpinner.setAdapter(adapter1);
         newGroup = (EditText)this.findViewById(R.id.newGroupName);
 
+        addGroupButton = (Button)this.findViewById(R.id.addGroup);
+        addGroupButton.setOnClickListener(c.getButtonListener());   
         currentGroups = (ListView)this.findViewById(R.id.currentGroups);
         currentGroups.setOnItemClickListener(c.getGroupListListener());
+        glistAdapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, groups);
+    	currentGroups.setAdapter(glistAdapter);
         editButton = (Button)this.findViewById(R.id.editContact);   
         editButton.setOnClickListener(c.getButtonListener());        
         saveButton = (Button)this.findViewById(R.id.save);        
@@ -61,6 +75,7 @@ public class Add_Activity extends Activity {
         String temp = getIntent().getStringExtra("contactName");
         System.out.println("in:3");
         if(temp != null){
+        	oldName = temp;
         	name.setText(temp);
         	String[] cInfo = mdb.getContactInfo(temp);
         	
@@ -68,6 +83,7 @@ public class Add_Activity extends Activity {
         	email.setText(cInfo[2]);
         	
         	fillGroupList(new String[]{"KTH", "SU"});
+        	
         	//groupSpinner.setSelection(adapter1.getPosition(cInfo[3]));
 
             editable(false);
@@ -88,12 +104,22 @@ public class Add_Activity extends Activity {
 		newGroup.setEnabled(edit);
 		saveButton.setEnabled(edit);
 		removeButton.setEnabled(edit);
+		currentGroups.setEnabled(edit);
+		addGroupButton.setEnabled(edit);
 	}
 	
 	public void fillGroupList(String[] list){
-    	ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-    				android.R.layout.simple_list_item_1,
-    				list);
-    	currentGroups.setAdapter(arrayAdapter); 
+    	groups.addAll(Arrays.asList(list));
+    	glistAdapter.notifyDataSetChanged();
     }
+	
+	public void removeGroup(int pos){		
+		groups.remove(pos);
+		glistAdapter.notifyDataSetChanged();
+	}
+	
+	public void addGroup(String newGroup){
+		groups.add(newGroup);
+		glistAdapter.notifyDataSetChanged();
+	}
 }

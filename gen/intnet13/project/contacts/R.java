@@ -24,11 +24,11 @@ public final class R {
         public static final int email=0x7f050006;
         public static final int groupPicker=0x7f050018;
         public static final int groupPickerSinner=0x7f050008;
-        public static final int ipAddress=0x7f050014;
-        public static final int loginButton=0x7f050013;
+        public static final int ipAddress=0x7f050011;
+        public static final int loginButton=0x7f050014;
         public static final int name=0x7f050002;
         public static final int newGroupName=0x7f05000a;
-        public static final int password=0x7f050012;
+        public static final int password=0x7f050013;
         public static final int phoneNumber=0x7f050004;
         public static final int remove=0x7f05000e;
         public static final int save=0x7f050010;
@@ -41,7 +41,7 @@ public final class R {
         public static final int textView4=0x7f050009;
         public static final int textView5=0x7f050007;
         public static final int textView6=0x7f05000c;
-        public static final int username=0x7f050011;
+        public static final int username=0x7f050012;
         public static final int viewSwitcher1=0x7f050015;
     }
     public static final class layout {

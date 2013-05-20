@@ -96,7 +96,9 @@ public class Control {
 						!ThisAdd.newGroup.getText().toString().equals(""))
 					group = ThisAdd.newGroup.getText().toString();
 				System.out.println("Group: " + group);
-				
+				ThisAdd.removeGroups.remove(group);
+				ThisAdd.addGroups.add(group);
+				ThisAdd.addGroup(group);
 				break;
 				
 			case R.id.editContact:
@@ -105,10 +107,17 @@ public class Control {
 				
 			case R.id.save:
 				//prep for groupsave;
-				mdb.saveContact(ThisAdd.name.getText().toString(),
-						ThisAdd.phoneNumber.getText().toString(),
-						ThisAdd.email.getText().toString(),
-						"");
+				if(ThisAdd.oldName == null)
+					mdb.saveContact(ThisAdd.name.getText().toString(),
+							ThisAdd.phoneNumber.getText().toString(),
+							ThisAdd.email.getText().toString(),
+							"");
+				else
+					mdb.updateContact(ThisAdd.oldName, ThisAdd.name.getText().toString(),
+							ThisAdd.phoneNumber.getText().toString(),
+							ThisAdd.email.getText().toString(),
+							(String[]) ThisAdd.addGroups.toArray(),
+							(String[]) ThisAdd.removeGroups.toArray());
 				ThisAdd.editable(false);
 				This.fillcontactList(mdb.getContacts());
 				This.fillGroup(mdb.getGroups());
@@ -149,11 +158,10 @@ public class Control {
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			//tabort rad och delete fron mdb
-			mdb.removeContactFromGroup(ThisAdd.name.getText().toString(),
-					((TextView)arg1).getText().toString());
-			//Update the grouplist
-			//ThisAdd.fillGroupList(null);
+			ThisAdd.removeGroup(arg2);
+			String groupName = ((TextView) arg1).getText().toString();
+			ThisAdd.addGroups.remove(groupName);
+			ThisAdd.removeGroups.add(groupName);
 		}
 	}
 	

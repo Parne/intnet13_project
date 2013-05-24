@@ -33,8 +33,7 @@ public class Add_Activity extends Activity {
 	public String oldName = null;
 	private ArrayAdapter<String> glistAdapter;
 	public ArrayList<String> groups = new ArrayList<String>();
-	public ArrayList<String> addGroups = new ArrayList<String>();
-	public ArrayList<String> removeGroups = new ArrayList<String>();
+	public String[] oldGroups;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,8 +81,9 @@ public class Add_Activity extends Activity {
         	phoneNumber.setText(cInfo[1]);
         	email.setText(cInfo[2]);
         	
-        	fillGroupList(new String[]{"KTH", "SU"});
-        	
+        	//fillGroupList(new String[]{"KTH", "SU"});
+        	oldGroups = Arrays.copyOfRange(cInfo, 3, cInfo.length);
+        	fillGroupList(oldGroups);
         	//groupSpinner.setSelection(adapter1.getPosition(cInfo[3]));
 
             editable(false);
@@ -115,6 +115,11 @@ public class Add_Activity extends Activity {
 	
 	public void removeGroup(int pos){		
 		groups.remove(pos);
+		glistAdapter.notifyDataSetChanged();
+	}
+	
+	public void removeGroup(String oldGroup){
+		groups.remove(oldGroup);
 		glistAdapter.notifyDataSetChanged();
 	}
 	

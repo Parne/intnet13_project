@@ -202,6 +202,42 @@ public class DatabaseClient {
 		return true;
 	}
 	
+	public boolean updateContactMemberships(String contactID, String[] groups) {
+		String[] options = new String[groups.length+2];
+		options[0] = contactID;
+		options[1] = Integer.toString(groups.length);
+		int i = 2;
+		for (String a : groups) {
+			options[i] = a;
+			i++;
+		}
+		int[] response;
+		response = query("8", options);
+		if(response[0] != 1) {
+			System.out.println("Failed to update contactMemberships to external db");
+			return false;
+		}			
+		return true;
+	}
+	
+	
+	public void removeContactFromGroup(String name, String group) {
+		String contactID = contacts.get(name)[2];
+		String[] groups = new String[1];
+		groups[0] = group;
+		if(!updateContactMemberships(contactID, groups))
+			return;			
+		ArrayList<String> contactsInCurrG = contacts_in_group.get(name);
+		String current;
+		for (int i = 0; i<contactsInCurrG.size(); i++) {
+			current = contactsInCurrG.get(i);
+			if(current.equals(group)) {
+				contactsInCurrG.remove(i);
+				break;
+			}
+		}
+	}
+	
 	public boolean saveContact(String contactName, String phoneNumber, String email,
 			String group) {
 		if(contacts.containsKey(contactName))
@@ -381,4 +417,5 @@ public class DatabaseClient {
 				return 0; }
 			});
 	}
+
 }

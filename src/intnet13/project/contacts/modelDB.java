@@ -23,7 +23,6 @@ public class modelDB implements Serializable {
 		return myClient.authenticate();	
 	}
 
-	//ifall ArrayList är att föredra går det att ändra.
 	/**
 	 * Returns all groups with "Alla" first.
 	 * @return

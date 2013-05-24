@@ -64,8 +64,8 @@ public class modelDB implements Serializable {
 	}
 
 	public void saveContact(String contactName, String phoneNumber, String email,
-			String group) {
-		myClient.saveContact(contactName, phoneNumber, email, group);		
+			String[] group) {
+		//myClient.saveContact(contactName, phoneNumber, email, group);		
 	}
 
 	public String[] getContactInfo(String contactName) {
@@ -77,12 +77,6 @@ public class modelDB implements Serializable {
 	}
 
 	public void removeContactFromGroup(String name, String group) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void updateContact(String oldName, String contactName, String phoneNumber, String email,
-			String[] group) {
 		// TODO Auto-generated method stub
 		
 	}

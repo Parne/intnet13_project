@@ -1,5 +1,8 @@
 package intnet13.project.contacts;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import android.content.Intent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -95,9 +98,7 @@ public class Control {
 				if(ThisAdd.groupSpinner.getSelectedItemPosition() == 0 &&
 						!ThisAdd.newGroup.getText().toString().equals(""))
 					group = ThisAdd.newGroup.getText().toString();
-				System.out.println("Group: " + group);
-				ThisAdd.removeGroups.remove(group);
-				ThisAdd.addGroups.add(group);
+				System.out.println("Group: " + group);				
 				ThisAdd.addGroup(group);
 				break;
 				
@@ -105,19 +106,37 @@ public class Control {
 				ThisAdd.editable(true);
 				break;
 				
-			case R.id.save:
+			case R.id.save:				
+				ArrayList<String> add = new ArrayList<String>(ThisAdd.groups);
+				ArrayList<String> remove = 
+						new ArrayList<String>(Arrays.asList(ThisAdd.oldGroups));
+				String[] sortedCurrG = (String[]) ThisAdd.groups.toArray();
+				for(String s : ThisAdd.oldGroups)
+					add.remove(s);
+				for(String s : ThisAdd.groups)
+					remove.remove(s);
+				
+				System.out.println("Tabort: ");
+				for(String s: remove)
+					System.out.println(s);
+				System.out.println("Lägg till:");
+				for(String s: add)
+					System.out.println(s);
+				
 				//prep for groupsave;
 				if(ThisAdd.oldName == null)
 					mdb.saveContact(ThisAdd.name.getText().toString(),
 							ThisAdd.phoneNumber.getText().toString(),
 							ThisAdd.email.getText().toString(),
-							"");
+							(String[]) ThisAdd.groups.toArray());
 				else
 					mdb.updateContact(ThisAdd.oldName, ThisAdd.name.getText().toString(),
 							ThisAdd.phoneNumber.getText().toString(),
 							ThisAdd.email.getText().toString(),
-							(String[]) ThisAdd.addGroups.toArray(),
-							(String[]) ThisAdd.removeGroups.toArray());
+							(String[]) add.toArray(),
+							(String[]) remove.toArray());				
+				
+				
 				ThisAdd.editable(false);
 				This.fillcontactList(mdb.getContacts());
 				This.fillGroup(mdb.getGroups());
@@ -158,10 +177,9 @@ public class Control {
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			ThisAdd.removeGroup(arg2);
+			//ThisAdd.removeGroup(arg2);
 			String groupName = ((TextView) arg1).getText().toString();
-			ThisAdd.addGroups.remove(groupName);
-			ThisAdd.removeGroups.add(groupName);
+			ThisAdd.removeGroup(groupName);
 		}
 	}
 	

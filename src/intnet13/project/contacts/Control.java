@@ -110,7 +110,7 @@ public class Control {
 				ArrayList<String> add = new ArrayList<String>(ThisAdd.groups);
 				ArrayList<String> remove = 
 						new ArrayList<String>(Arrays.asList(ThisAdd.oldGroups));
-				String[] sortedCurrG = (String[]) ThisAdd.groups.toArray();
+				//String[] sortedCurrG = (String[]) ThisAdd.groups.toArray();
 				for(String s : ThisAdd.oldGroups)
 					add.remove(s);
 				for(String s : ThisAdd.groups)
@@ -128,14 +128,13 @@ public class Control {
 					mdb.saveContact(ThisAdd.name.getText().toString(),
 							ThisAdd.phoneNumber.getText().toString(),
 							ThisAdd.email.getText().toString(),
-							(String[]) ThisAdd.groups.toArray());
+							toStringArray(ThisAdd.groups));
 				else
 					mdb.updateContact(ThisAdd.oldName, ThisAdd.name.getText().toString(),
 							ThisAdd.phoneNumber.getText().toString(),
 							ThisAdd.email.getText().toString(),
-							(String[]) add.toArray(),
-							(String[]) remove.toArray());				
-				
+							toStringArray(add),
+							toStringArray(remove));
 				
 				ThisAdd.editable(false);
 				This.fillcontactList(mdb.getContacts());
@@ -194,6 +193,13 @@ public class Control {
 
 		@Override
 		public void onNothingSelected(AdapterView<?> arg0) {}		
+	}
+	
+	public String[] toStringArray(ArrayList<String> temp){
+		String[] addArray = new String[temp.size()];
+		for(int i = 0; i < temp.size();i++)
+			addArray[i] = temp.get(i);
+		return addArray;
 	}
 
 }

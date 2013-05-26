@@ -33,7 +33,7 @@ public class Add_Activity extends Activity {
 	public String oldName = null;
 	private ArrayAdapter<String> glistAdapter;
 	public ArrayList<String> groups = new ArrayList<String>();
-	public String[] oldGroups;
+	public String[] oldGroups = new String[]{};
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {

@@ -215,10 +215,14 @@ public class DatabaseClient {
 	public void updateContact(String oldName, String contactName, String phoneNumber, String email,
 			String[] addGroups, String[] removeGroups) {
 		updateContact(oldName, contactName, phoneNumber, email);
+		if(addGroups != null) {
 		for(int i = 0; i<addGroups.length; i++)
 			addOrRemoveContactInGroup(contactName, addGroups[i], false);
+		}
+		if(removeGroups != null) {
 		for(int j = 0; j<removeGroups.length; j++)
 			addOrRemoveContactInGroup(contactName, removeGroups[j], true);
+		}
 	}
 	
 	// Update only contact info
@@ -431,11 +435,16 @@ public class DatabaseClient {
 		if(!contacts.containsKey(contactName))
 			return new String[]{""};
 		String[] info = contacts.get(contactName);
-		String[] res = new String[info.length+1];
+		String[] groups = getAllMemberships(contactName);
+		String[] res = new String[info.length+groups.length];
 		res[0] = contactName;
 		res[1] = info[0];
 		res[2] = info[1];
-		res[3] = getMembership(contactName);
+		for (int i = 3; i< groups.length+3; i++) {
+			res[i] = groups[i-3];
+		}
+		for (String a : res)
+			System.out.println(a);
 		return res;
 	}
 	
@@ -462,6 +471,26 @@ public class DatabaseClient {
 	    	return res[0];
 		return res[1];
 	}
+	private String[] getAllMemberships(String name) {
+		String currentGroup;
+		Iterator it = contacts_in_group.entrySet().iterator();
+		ArrayList<String> currentMembers;
+		List<String> groupList = new ArrayList<String>();		
+	    while (it.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)it.next();
+	        currentGroup = (String) pairs.getKey();
+	        currentMembers = contacts_in_group.get(currentGroup);
+	        for (String a : currentMembers) {
+	        	if(a.equals(name))
+	        		groupList.add(currentGroup);
+	        }
+	    }
+	    sortList(groupList);
+	    String[] res = new String[groupList.size()];
+	    for(int i = 0; i< groupList.size(); i++) 
+	    	res[i] = groupList.get(i);
+	    return res;
+	}
 	
 	private void sortList(List<String> list) {
 		Collections.sort(list, new Comparator<String>() {
@@ -478,4 +507,5 @@ public class DatabaseClient {
 				}
 				return 0; }
 			});
-	}	
+	}
+}

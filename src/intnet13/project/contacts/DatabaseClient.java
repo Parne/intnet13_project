@@ -212,6 +212,15 @@ public class DatabaseClient {
 		return true;
 	}
 	
+	public void updateContact(String oldName, String contactName, String phoneNumber, String email,
+			String[] addGroups, String[] removeGroups) {
+		updateContact(oldName, contactName, phoneNumber, email);
+		for(int i = 0; i<addGroups.length; i++)
+			addOrRemoveContactInGroup(contactName, addGroups[i], false);
+		for(int j = 0; j<removeGroups.length; j++)
+			addOrRemoveContactInGroup(contactName, removeGroups[j], true);
+	}
+	
 	// Update only contact info
 	public void updateContact(String oldName, String contactName, String phoneNumber, String email) {
 		if(!contacts.containsKey(oldName)) {
@@ -240,6 +249,10 @@ public class DatabaseClient {
 	 */	
 	public void addOrRemoveContactInGroup(String name, String group, boolean remove) {
 		String contactID = contacts.get(name)[2];
+		if(!checkIf_saveGroup(group)) {
+			System.out.println("Failed to save group when needed (checkif_saveGroup)");
+			return;
+		}
 		String groupID = groups.get(group)[1];
 		String[] options = new String[2];
 		options[0] = contactID; options[1] = groupID;
@@ -276,19 +289,24 @@ public class DatabaseClient {
 			addContactInGroup(group, name);
 	}
 	
+	private boolean checkIf_saveGroup(String g_name) {
+		if(groups.containsKey(g_name))
+			return true;
+		String[] options = new String[2];
+		options[0] = g_name;
+		options[1] = g_name + " gruppen";
+		return saveGroup(options);
+	}
+	
 	public boolean saveContact(String contactName, String phoneNumber, String email,
 			String[] group) {
+	
 		if(contacts.containsKey(contactName))
 			return false;
 		//Check if all groups exists, if not, create new groups
 		for(int i = 0; i<group.length; i++) {
-			if(!groups.containsKey(group[i])) {
-				String[] options = new String[2];
-				options[0] = group[i];
-				options[1] = group[i] + " gruppen";
-				if(!saveGroup(options))
+				if(checkIf_saveGroup(group[i]))
 					return false;
-			}
 		}
 		//Create new contact and insert into "Alla" (externally)
 		String[] options = new String[4];
@@ -460,5 +478,4 @@ public class DatabaseClient {
 				}
 				return 0; }
 			});
-	}
-}
+	}	

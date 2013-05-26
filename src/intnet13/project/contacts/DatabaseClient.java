@@ -139,6 +139,29 @@ public class DatabaseClient {
 		}
 	}
 	
+	// Locally!
+	// Remove a contact's memberships
+	// or update contact's memberships
+	private void internal_changeContactMemberships(String oldName, String newName, boolean remove) {
+		Iterator at = contacts_in_group.entrySet().iterator();
+		ArrayList<String> contact_in_group;
+		String current;
+	    while (at.hasNext()) {
+	        Map.Entry pairs = (Map.Entry)at.next();
+	        contact_in_group = (ArrayList<String>) pairs.getValue();
+	        for(int i = 0; i<contact_in_group.size(); i++) {
+	        	current = contact_in_group.get(i);
+	        	if(current.equals(oldName))	{
+        			contact_in_group.remove(i);
+	        		if(!remove)
+	        			contact_in_group.add(newName);
+	        		break;
+	        	}
+	        }
+	    }
+	}
+	
+	// Remove contact, in DB and locally
 	public boolean removeContact(String name) {
 		if(!contacts.containsKey(name)) {
 			System.out.println("Contact doesn't exist!");
@@ -148,26 +171,13 @@ public class DatabaseClient {
 		String[] options = new String[1];
 		options[0] = contacts.get(name)[2];
 		response = query("3",  options);
-		if(response[0] == 1) {
-			contacts.remove(name);
-			// Remove contact's membership in all groups
-			Iterator at = contacts_in_group.entrySet().iterator();
-			ArrayList<String> contact_in_group;
-			String current;
-		    while (at.hasNext()) {
-		        Map.Entry pairs = (Map.Entry)at.next();
-		        contact_in_group = (ArrayList<String>) pairs.getValue();
-		        for(int i = 0; i<contact_in_group.size(); i++) {
-		        	current = contact_in_group.get(i);
-		        	if(current.equals(name))
-		        		contact_in_group.remove(i);
-		        }
-		    }
-		}
-		else {
-			System.out.println("Connection to db failed");
+		if(response[0] != 1) {
+			System.out.println("Couldnt remove contact in external db!");
 			return false;
 		}
+		// Remove contact and all of its memberships in groups
+		contacts.remove(name);
+		internal_changeContactMemberships(name, null, true);
 		return true;
 	}
 	
@@ -202,60 +212,90 @@ public class DatabaseClient {
 		return true;
 	}
 	
-	public boolean updateContactMemberships(String contactID, String[] groups) {
-		String[] options = new String[groups.length+2];
-		options[0] = contactID;
-		options[1] = Integer.toString(groups.length);
-		int i = 2;
-		for (String a : groups) {
-			options[i] = a;
-			i++;
+	// Update only contact info
+	public void updateContact(String oldName, String contactName, String phoneNumber, String email) {
+		if(!contacts.containsKey(oldName)) {
+			System.out.println("Couldn find contact to update");
+			return;
 		}
+		String contactID = contacts.get(oldName)[2];
+		String[] options = new String[4];
+		options[0] = contactName; options[1] = phoneNumber;
+		options[2] = email; options[3] = contactID;
 		int[] response;
-		response = query("8", options);
+		response = query("10", options);
 		if(response[0] != 1) {
-			System.out.println("Failed to update contactMemberships to external db");
-			return false;
-		}			
-		return true;
+			System.out.println("Couldnt update contact to external db");
+			return;
+		}
+		contacts.remove(oldName);
+		addContact(contactName, phoneNumber, email, contactID);
+		internal_changeContactMemberships(oldName, contactName, false);
 	}
 	
-	
-	public void removeContactFromGroup(String name, String group) {
+	/**
+	 * Update a contact's memberships in groups
+	 * Remove or Add
+	 * Assume that group exists
+	 */	
+	public void addOrRemoveContactInGroup(String name, String group, boolean remove) {
 		String contactID = contacts.get(name)[2];
-		String[] groups = new String[1];
-		groups[0] = group;
-		if(!updateContactMemberships(contactID, groups))
-			return;			
-		ArrayList<String> contactsInCurrG = contacts_in_group.get(name);
-		String current;
-		for (int i = 0; i<contactsInCurrG.size(); i++) {
-			current = contactsInCurrG.get(i);
-			if(current.equals(group)) {
-				contactsInCurrG.remove(i);
-				break;
+		String groupID = groups.get(group)[1];
+		String[] options = new String[2];
+		options[0] = contactID; options[1] = groupID;
+		String type;
+		if(remove)
+			type = "8";
+		else
+			type = "9";
+		int[] response;
+		response = query(type, options);
+		if(response[0] != 1) {
+			System.out.println("Failed to remove contact in group (external db)");
+			return;
+		}	
+		// Local update	
+		// Not using addOrRemoveContactInGroup
+		// since this is a single arraylist iteration
+		// instead of iterate over all groups to find all
+		// memberships
+		ArrayList<String> contactsInCurrG = contacts_in_group.get(group);
+		// Remove
+		if(remove) {
+			String current;
+			for (int i = 0; i<contactsInCurrG.size(); i++) {
+				current = contactsInCurrG.get(i);
+				if(current.equals(group)) {
+					contactsInCurrG.remove(i);
+					break;
+				}
 			}
 		}
+		// Add
+		else
+			addContactInGroup(group, name);
 	}
 	
 	public boolean saveContact(String contactName, String phoneNumber, String email,
-			String group) {
+			String[] group) {
 		if(contacts.containsKey(contactName))
 			return false;
-		if(!groups.containsKey(group)) {
-			String[] options = new String[2];
-			options[0] = group;
-			options[1] = group + " gruppen";
-			if(!saveGroup(options))
-				return false;
+		//Check if all groups exists, if not, create new groups
+		for(int i = 0; i<group.length; i++) {
+			if(!groups.containsKey(group[i])) {
+				String[] options = new String[2];
+				options[0] = group[i];
+				options[1] = group[i] + " gruppen";
+				if(!saveGroup(options))
+					return false;
+			}
 		}
-		String g_id = groups.get(group)[1];
-		String[] options = new String[5];
+		//Create new contact and insert into "Alla" (externally)
+		String[] options = new String[4];
 		options[0] = contactName;
 		options[1] = phoneNumber;
 		options[2] = email;
-		options[3] = g_id;
-		options[4] = groups.get("Alla")[1]; 
+		options[3] = groups.get("Alla")[1]; 
 		int[] response;
 		response = query("4",  options);
 		if(response[0] != 1) {
@@ -263,9 +303,13 @@ public class DatabaseClient {
 			return false;
 		}
 		addContact(contactName, phoneNumber, email, Integer.toString(response[1]));
-		addContactInGroup(group, contactName);
-		if(!group.equals("Alla")) 
-			addContactInGroup("Alla", contactName);
+		// Externally add contact in new groups
+		for(int i = 0; i<group.length; i++) {
+			if(!group[i].equals("Alla"))
+				addOrRemoveContactInGroup(contactName, group[i], false);
+		}
+		// Locally add contact in "Alla"
+		addContactInGroup("Alla", contactName);
 		return true;
 	}
 	
@@ -417,5 +461,4 @@ public class DatabaseClient {
 				return 0; }
 			});
 	}
-
 }

@@ -12,12 +12,7 @@ public class modelDB implements Serializable {
 	
 	public modelDB() {
 	}
-	/**
-	 * @param user
-	 * @param password
-	 * @param string 
-	 * @return
-	 */
+	
 	public int authenticate(String host, String user, String password) {
 		myClient = new DatabaseClient(host, 4545, user, password);
 		return myClient.authenticate();	
@@ -41,7 +36,6 @@ public class modelDB implements Serializable {
 	 * @return
 	 */
 	public String[] search(String contactName, String groupName) {
-		// Done
 		return myClient.search(contactName, groupName);
 		
 	}
@@ -52,14 +46,12 @@ public class modelDB implements Serializable {
 	 * @return
 	 */
 	public String[] getByGroup(String groupName) {
-		// Done
 		if(groupName.equals("Alla"))
 			return getContacts();
 		return myClient.getByGroup(groupName);
 	}
 
 	public void remove(String name) {
-		// Done
 		myClient.removeContact(name);		
 	}
 
@@ -83,7 +75,7 @@ public class modelDB implements Serializable {
 
 	public void updateContact(String oldName, String contactName, String phoneNumber, String email,
 			String[] addGroups, String[] removeGroups) {
-		// TODO Auto-generated method stub
+		myClient.updateContact(oldName, contactName, phoneNumber, email, addGroups, removeGroups);
 		
 	}
 

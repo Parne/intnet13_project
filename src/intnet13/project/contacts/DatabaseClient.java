@@ -212,6 +212,9 @@ public class DatabaseClient {
 		return true;
 	}
 	
+	// Update contact info
+	// then add and/or remove
+	// its memberships
 	public void updateContact(String oldName, String contactName, String phoneNumber, String email,
 			String[] addGroups, String[] removeGroups) {
 		updateContact(oldName, contactName, phoneNumber, email);
@@ -226,7 +229,7 @@ public class DatabaseClient {
 	}
 	
 	// Update only contact info
-	public void updateContact(String oldName, String contactName, String phoneNumber, String email) {
+	private void updateContact(String oldName, String contactName, String phoneNumber, String email) {
 		if(!contacts.containsKey(oldName)) {
 			System.out.println("Couldn find contact to update");
 			return;
@@ -282,7 +285,7 @@ public class DatabaseClient {
 			String current;
 			for (int i = 0; i<contactsInCurrG.size(); i++) {
 				current = contactsInCurrG.get(i);
-				if(current.equals(group)) {
+				if(current.equals(name)) {
 					contactsInCurrG.remove(i);
 					break;
 				}
@@ -309,7 +312,7 @@ public class DatabaseClient {
 			return false;
 		//Check if all groups exists, if not, create new groups
 		for(int i = 0; i<group.length; i++) {
-				if(checkIf_saveGroup(group[i]))
+				if(!checkIf_saveGroup(group[i]))
 					return false;
 		}
 		//Create new contact and insert into "Alla" (externally)
@@ -348,7 +351,7 @@ public class DatabaseClient {
 		return true;
 	}
 	
-	public int[] query(String type, String[] options) {
+	private int[] query(String type, String[] options) {
 		if(!openConnection())
 			return new int[]{-1};
 		output.println(type);
@@ -448,29 +451,6 @@ public class DatabaseClient {
 		return res;
 	}
 	
-	// Return all groups a contact belongs to
-	private String getMembership(String name) {
-		String currentGroup;
-		Iterator it = contacts_in_group.entrySet().iterator();
-		ArrayList<String> currentMembers;
-		List<String> groupList = new ArrayList<String>();		
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        currentGroup = (String) pairs.getKey();
-	        currentMembers = contacts_in_group.get(currentGroup);
-	        for (String a : currentMembers) {
-	        	if(a.equals(name))
-	        		groupList.add(currentGroup);
-	        }
-	    }
-	    sortList(groupList);
-	    String[] res = new String[groupList.size()];
-	    for(int i = 0; i< groupList.size(); i++) 
-	    	res[i] = groupList.get(i);
-	    if(groupList.size() == 1)
-	    	return res[0];
-		return res[1];
-	}
 	private String[] getAllMemberships(String name) {
 		String currentGroup;
 		Iterator it = contacts_in_group.entrySet().iterator();

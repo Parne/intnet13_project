@@ -188,7 +188,8 @@ public class Control {
 		@Override
 		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
 				long arg3) {
-			This.fillcontactList(mdb.getByGroup((String) ((TextView) arg1).getText()));
+			This.fillcontactList(mdb.search((String) ((TextView) arg1).getText(),
+					This.searchText.getText().toString()));
 		}
 
 		@Override

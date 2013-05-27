@@ -124,6 +124,8 @@ public class Add_Activity extends Activity {
 	}
 	
 	public void addGroup(String newGroup){
+		if(groups.contains(newGroup) || newGroup.equals("Alla"))
+			return;
 		groups.add(newGroup);
 		glistAdapter.notifyDataSetChanged();
 	}

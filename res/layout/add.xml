@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-
+    android:orientation="vertical"
+     >
+	<requestFocus />
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="match_parent"
@@ -96,18 +97,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Klicka på en grupp för att tabort den." />
-<LinearLayout android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+			<LinearLayout android:orientation="horizontal"
+        		android:layout_width="fill_parent"
+        		android:layout_height="500dp"
+        		>
 
-            <ListView
-                android:id="@+id/currentGroups"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                tools:listitem="@android:layout/simple_list_item_1" >
+           		<ListView
+               		android:id="@+id/currentGroups"
+                	android:layout_width="match_parent"
+                	android:layout_height="wrap_content"
+                	tools:listitem="@android:layout/simple_list_item_1" >
 
-            </ListView>
-</LinearLayout>
+            	</ListView>
+			</LinearLayout>
         </LinearLayout>
     </ScrollView>
 

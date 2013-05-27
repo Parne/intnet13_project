@@ -220,11 +220,13 @@ public class DatabaseClient {
 		updateContact(oldName, contactName, phoneNumber, email);
 		if(addGroups != null) {
 		for(int i = 0; i<addGroups.length; i++)
-			addOrRemoveContactInGroup(contactName, addGroups[i], false);
+			if(!addGroups[i].equals("Alla")) //Never add contact multiple times into Alla
+				addOrRemoveContactInGroup(contactName, addGroups[i], false);
 		}
 		if(removeGroups != null) {
 		for(int j = 0; j<removeGroups.length; j++)
-			addOrRemoveContactInGroup(contactName, removeGroups[j], true);
+			if(!removeGroups[j].equals("Alla")) //Never remove a contact from Alla, only when contact is remowed
+				addOrRemoveContactInGroup(contactName, removeGroups[j], true);
 		}
 	}
 	
@@ -461,7 +463,7 @@ public class DatabaseClient {
 	        currentGroup = (String) pairs.getKey();
 	        currentMembers = contacts_in_group.get(currentGroup);
 	        for (String a : currentMembers) {
-	        	if(a.equals(name))
+	        	if(a.equals(name) && !currentGroup.equals("Alla"))
 	        		groupList.add(currentGroup);
 	        }
 	    }
